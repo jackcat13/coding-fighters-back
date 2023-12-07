@@ -32,3 +32,19 @@ jobs:
           push: true
           tags: someawesomedockerid/coding-fighters-back:latest
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: containerize
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v2
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            docker stack deploy -c docker-compose.yml coding-fighters
