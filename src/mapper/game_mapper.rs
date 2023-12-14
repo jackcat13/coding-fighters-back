@@ -1,7 +1,7 @@
 use crate::dto::game_dto::GameDto;
 use crate::model::game::Game;
 
-pub async fn to_entity(game_dto: GameDto) -> Game {
+pub fn to_entity(game_dto: GameDto) -> Game {
     Game {
         id: None,
         topics: game_dto.topics,
@@ -9,9 +9,9 @@ pub async fn to_entity(game_dto: GameDto) -> Game {
     }
 }
 
-pub async fn to_dto(game: Game) -> GameDto {
+pub fn to_dto(game: Game) -> GameDto {
     GameDto {
-        id: game.id,
+        id: Some(game.id.expect("Failed to get game id").to_string()),
         topics: game.topics,
         question_number: game.question_number,
     }

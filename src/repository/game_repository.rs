@@ -1,5 +1,5 @@
 use mongodb::results::InsertOneResult;
-use mongodb::{Client, Collection};
+use mongodb::{Client, Collection, Cursor};
 use std::env;
 extern crate dotenv;
 use crate::model::game::Game;
@@ -28,7 +28,11 @@ impl GameRepo {
         GameRepo { col }
     }
 
-    pub async fn create_user(&self, new_game: Game) -> mongodb::error::Result<InsertOneResult> {
+    pub async fn create_game(&self, new_game: Game) -> mongodb::error::Result<InsertOneResult> {
         self.col.insert_one(new_game, None).await
+    }
+
+    pub async fn get_games(&self) -> mongodb::error::Result<Cursor<Game>> {
+        self.col.find(None, None).await
     }
 }

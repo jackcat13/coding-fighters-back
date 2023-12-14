@@ -5,11 +5,12 @@ mod repository;
 mod resource;
 mod service;
 
+use crate::resource::game_resource::get_games;
 use resource::game_resource::create_game;
 use rocket::{get, routes, Build, Rocket};
 
 #[get("/")]
-fn index() -> &'static str {
+async fn index() -> &'static str {
     "Hello, world!"
 }
 
@@ -22,5 +23,6 @@ async fn main() -> Result<(), rocket::Error> {
 fn build_rocket() -> Rocket<Build> {
     rocket::build()
         .mount("/", routes![index])
-        .mount("/game", routes![create_game])
+        .mount("/", routes![create_game])
+        .mount("/", routes![get_games])
 }
