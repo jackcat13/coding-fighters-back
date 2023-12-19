@@ -7,4 +7,5 @@ pub struct Game {
     pub id: Option<ObjectId>,
     pub topics: Vec<String>,
     pub question_number: String,
+    pub is_private: bool,
 }
