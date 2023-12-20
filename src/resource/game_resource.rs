@@ -40,3 +40,16 @@ pub async fn get_games() -> Result<Json<Vec<GameDto>>, Status> {
     println!("get_games resource ending");
     result
 }
+
+#[get("/game/<id>", format = "json")]
+pub async fn get_game(id: String) -> Result<Json<GameDto>, Status> {
+    println!("get_game resource started");
+    let game_service = GameService::init().await;
+    let game_fetched = game_service.get_game(id).await;
+    let result = match game_fetched {
+        Ok(game_fetched) => Ok(Json(game_mapper::to_dto(game_fetched))),
+        Err(_) => Err(Status::NotFound),
+    };
+    println!("get_game resource ending");
+    result
+}

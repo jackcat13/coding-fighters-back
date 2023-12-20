@@ -1,7 +1,8 @@
 use crate::model::game::Game;
 use crate::repository::game_repository::GameRepo;
-use mongodb::error::Error;
+use mongodb::bson::oid::ObjectId;
 use rocket::futures::TryStreamExt;
+use std::str::FromStr;
 
 pub struct GameService {
     game_repo: GameRepo,
@@ -13,7 +14,7 @@ impl GameService {
         GameService { game_repo }
     }
 
-    pub async fn create_game(&self, game: Game) -> Result<Game, Error> {
+    pub async fn create_game(&self, game: Game) -> Result<Game, mongodb::error::Error> {
         println!("create_games service started");
         let insert = self.game_repo.create_game(game.clone()).await;
         let result = match insert {
@@ -41,6 +42,21 @@ impl GameService {
             Err(err) => Err(err),
         };
         println!("get_games service ending");
+        result
+    }
+
+    pub async fn get_game(&self, id: String) -> Result<Game, String> {
+        println!("get_game service started");
+        let object_id =
+            ObjectId::from_str(id.clone().as_str()).expect("Failed to create object id");
+        let result = match self.game_repo.get_game(object_id).await {
+            Ok(game) => match game {
+                None => Err(format!("Game with id {} does not exist", id)),
+                Some(game) => Ok(game),
+            },
+            Err(_) => Err("An error occurred.".to_string()),
+        };
+        println!("get_game service ending");
         result
     }
 }

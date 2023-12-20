@@ -4,6 +4,8 @@ use std::env;
 extern crate dotenv;
 use crate::model::game::Game;
 use dotenv::dotenv;
+use mongodb::bson::doc;
+use mongodb::bson::oid::ObjectId;
 use mongodb::options::ClientOptions;
 
 pub const MONGO_URI: &str = "MONGO_URI";
@@ -46,5 +48,12 @@ impl GameRepo {
         let games = self.col.find(None, None).await;
         println!("Games retrieved from DB");
         games
+    }
+
+    pub async fn get_game(&self, id: ObjectId) -> mongodb::error::Result<Option<Game>> {
+        println!("Getting game by id from DB");
+        let game = self.col.find_one(doc! {"_id": id}, None).await;
+        println!("Game retrieved by id from DB");
+        game
     }
 }

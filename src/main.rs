@@ -7,7 +7,7 @@ mod resource;
 mod service;
 
 use crate::fairing::cors::Cors;
-use crate::resource::game_resource::get_games;
+use crate::resource::game_resource::{get_game, get_games};
 use resource::game_resource::create_game;
 use rocket::{get, routes, Build, Rocket};
 
@@ -27,5 +27,6 @@ fn build_rocket() -> Rocket<Build> {
         .mount("/", routes![index])
         .mount("/", routes![create_game])
         .mount("/", routes![get_games])
+        .mount("/", routes![get_game])
         .attach(Cors)
 }
