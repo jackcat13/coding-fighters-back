@@ -1,10 +1,10 @@
 use crate::dto::game_dto::GameDto;
+use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::mapper::game_mapper;
 use crate::service::game_service::GameService;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::{get, post};
-use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 
 #[post("/game", format = "json", data = "<new_game>")]
 pub async fn create_game(new_game: Json<GameDto>) -> Result<Json<GameDto>, Status> {
@@ -60,5 +60,106 @@ fn process_service_error(error: GameServiceError) -> Status {
     match error.kind {
         GameServiceErrorKind::NotFound => Status::NotFound,
         GameServiceErrorKind::Internal => Status::InternalServerError,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::dto::game_dto::GameDto;
+    use crate::resource::game_resource::{create_game, get_game, get_games};
+    use rocket::async_test;
+    use rocket::http::Status;
+    use rocket::serde::json::Json;
+    use serial_test::serial;
+    use std::env;
+    use testcontainers::clients::Cli;
+    use testcontainers::GenericImage;
+
+    #[async_test]
+    #[serial]
+    async fn create_game_should_insert_game_entity_and_return_created_game() {
+        println!("Creating mongo container");
+        let docker = Cli::default();
+        let container = docker.run(GenericImage::new("mongo", "latest"));
+        let port = container.get_host_port_ipv4(27017);
+        let uri = format!("mongodb://localhost:{}", port);
+        env::set_var("MONGO_URI", uri.clone());
+        println!("Mongo container created");
+        let new_game = GameDto {
+            id: None,
+            topics: vec!["Java".to_string()],
+            question_number: 10,
+            is_private: false,
+        };
+        let game_created = create_game(Json(new_game)).await.unwrap().into_inner();
+        assert_eq!(game_created.id.is_some(), true);
+        assert_eq!(game_created.topics, vec!["Java"]);
+        assert_eq!(game_created.question_number, 10);
+        assert_eq!(game_created.is_private, false);
+
+        //Verify that the game was inserted in the DB
+        let game_db = get_game(game_created.id.unwrap())
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(game_db.id.is_some(), true);
+        assert_eq!(game_db.topics, vec!["Java"]);
+        assert_eq!(game_db.question_number, 10);
+        assert_eq!(game_db.is_private, false);
+    }
+
+    #[async_test]
+    #[serial]
+    async fn get_game_should_return_not_found_error() {
+        println!("Creating mongo container");
+        let docker = Cli::default();
+        let container = docker.run(GenericImage::new("mongo", "latest"));
+        let port = container.get_host_port_ipv4(27017);
+        let uri = format!("mongodb://localhost:{}", port);
+        env::set_var("MONGO_URI", uri.clone());
+        println!("Mongo container created");
+        let error = get_game("5f9e1b2a0b2b7c0009f9e1b9".to_string())
+            .await
+            .unwrap_err();
+        assert_eq!(error, Status::NotFound);
+    }
+
+    #[async_test]
+    #[serial]
+    async fn get_games_should_return_empty_result() {
+        println!("Creating mongo container");
+        let docker = Cli::default();
+        let container = docker.run(GenericImage::new("mongo", "latest"));
+        let port = container.get_host_port_ipv4(27017);
+        let uri = format!("mongodb://localhost:{}", port);
+        env::set_var("MONGO_URI", uri.clone());
+        println!("Mongo container created");
+        let games = get_games().await.unwrap().into_inner();
+        assert_eq!(games.len(), 0);
+    }
+
+    #[async_test]
+    #[serial]
+    async fn get_games_should_return_the_created_games() {
+        println!("Creating mongo container");
+        let docker = Cli::default();
+        let container = docker.run(GenericImage::new("mongo", "latest"));
+        let port = container.get_host_port_ipv4(27017);
+        let uri = format!("mongodb://localhost:{}", port);
+        env::set_var("MONGO_URI", uri.clone());
+        println!("Mongo container created");
+        let new_game = GameDto {
+            id: None,
+            topics: vec!["Java".to_string()],
+            question_number: 10,
+            is_private: false,
+        };
+        println!("Creating game 1");
+        let _ = create_game(Json(new_game.clone())).await;
+        println!("Creating game 2");
+        let _ = create_game(Json(new_game.clone())).await;
+        println!("Get games");
+        let games = get_games().await.unwrap().into_inner();
+        assert_eq!(games.len(), 2);
     }
 }

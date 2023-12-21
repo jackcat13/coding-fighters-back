@@ -1,10 +1,10 @@
+use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::model::game::Game;
 use crate::repository::game_repository::GameRepo;
 use mongodb::bson::oid::ObjectId;
+use mongodb::error::Error;
 use rocket::futures::TryStreamExt;
 use std::str::FromStr;
-use mongodb::error::Error;
-use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 
 pub struct GameService {
     game_repo: GameRepo,
@@ -36,13 +36,9 @@ impl GameService {
         let result = match self.game_repo.get_games().await {
             Ok(mut games) => {
                 let mut games_output = vec![];
-                match games.try_next().await {
-                    Ok(game) => match game {
-                        None => {}
-                        Some(game) => games_output.push(game.clone()),
-                    },
-                    Err(_) => {},
-                };
+                while let Some(game) = games.try_next().await.unwrap().or(None) {
+                    games_output.push(game.clone());
+                }
                 Ok(games_output)
             }
             Err(err) => Err(Self::process_internal_error(err)),
@@ -70,6 +66,9 @@ impl GameService {
     }
 
     fn process_internal_error(err: Error) -> GameServiceError {
-        GameServiceError { message: err.to_string(), kind: GameServiceErrorKind::Internal }
+        GameServiceError {
+            message: err.to_string(),
+            kind: GameServiceErrorKind::Internal,
+        }
     }
 }

@@ -1,4 +1,3 @@
-
 pub struct GameServiceError {
     pub message: String,
     pub kind: GameServiceErrorKind,
