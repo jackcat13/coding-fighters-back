@@ -4,6 +4,7 @@ use std::env;
 extern crate dotenv;
 use crate::model::game::Game;
 use dotenv::dotenv;
+use log::{debug, info};
 use mongodb::bson::doc;
 use mongodb::bson::oid::ObjectId;
 use mongodb::options::ClientOptions;
@@ -26,34 +27,34 @@ impl GameRepo {
         let client_options = ClientOptions::parse(uri)
             .await
             .expect("Failed to create client options");
-        println!("Creating DB client");
+        debug!("Creating DB client");
         let client = Client::with_options(client_options).expect("Failed to create mongo client");
-        println!("Accessing DB");
+        debug!("Accessing DB");
         let db = client.database(MONGO_DATABASE);
-        println!("Accessing collection");
+        debug!("Accessing collection");
         let col: Collection<Game> = db.collection(GAME);
-        println!("DB client created");
+        debug!("DB client created");
         GameRepo { col }
     }
 
     pub async fn create_game(&self, new_game: Game) -> mongodb::error::Result<InsertOneResult> {
-        println!("Creating game in DB");
+        debug!("Creating game in DB");
         let game_created = self.col.insert_one(new_game, None).await;
-        println!("Game created in DB");
+        info!("Game created in DB");
         game_created
     }
 
     pub async fn get_games(&self) -> mongodb::error::Result<Cursor<Game>> {
-        println!("Getting games from DB");
+        debug!("Getting games from DB");
         let games = self.col.find(None, None).await;
-        println!("Games retrieved from DB");
+        info!("Games retrieved from DB");
         games
     }
 
     pub async fn get_game(&self, id: ObjectId) -> mongodb::error::Result<Option<Game>> {
-        println!("Getting game by id from DB");
+        debug!("Getting game by id from DB");
         let game = self.col.find_one(doc! {"_id": id}, None).await;
-        println!("Game retrieved by id from DB");
+        info!("Game retrieved by id from DB");
         game
     }
 }

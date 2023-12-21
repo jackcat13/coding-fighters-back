@@ -19,6 +19,7 @@ async fn index() -> &'static str {
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
+    env_logger::init();
     let _rocket = build_rocket().launch().await?;
     Ok(())
 }

@@ -2,13 +2,14 @@ use crate::dto::game_dto::GameDto;
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::mapper::game_mapper;
 use crate::service::game_service::GameService;
+use log::{debug, error};
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::{get, post};
 
 #[post("/game", format = "json", data = "<new_game>")]
 pub async fn create_game(new_game: Json<GameDto>) -> Result<Json<GameDto>, Status> {
-    println!("create_games resource started");
+    debug!("create_games resource started");
     let game_service = GameService::init().await;
     let game_entity = game_mapper::to_entity(new_game.into_inner());
     let game_created = game_service.create_game(game_entity).await;
@@ -19,13 +20,13 @@ pub async fn create_game(new_game: Json<GameDto>) -> Result<Json<GameDto>, Statu
         }
         Err(err) => Err(process_service_error(err)),
     };
-    println!("create_games resource ending");
+    debug!("create_games resource ending");
     result
 }
 
 #[get("/games", format = "json")]
 pub async fn get_games() -> Result<Json<Vec<GameDto>>, Status> {
-    println!("get_games resource started");
+    debug!("get_games resource started");
     let game_service = GameService::init().await;
     let games_fetched = game_service.get_games().await;
     let result = match games_fetched {
@@ -38,25 +39,25 @@ pub async fn get_games() -> Result<Json<Vec<GameDto>>, Status> {
         }
         Err(err) => Err(process_service_error(err)),
     };
-    println!("get_games resource ending");
+    debug!("get_games resource ending");
     result
 }
 
 #[get("/game/<id>", format = "json")]
 pub async fn get_game(id: String) -> Result<Json<GameDto>, Status> {
-    println!("get_game resource started");
+    debug!("get_game resource started");
     let game_service = GameService::init().await;
     let game_fetched = game_service.get_game(id).await;
     let result = match game_fetched {
         Ok(game_fetched) => Ok(Json(game_mapper::to_dto(game_fetched))),
         Err(err) => Err(process_service_error(err)),
     };
-    println!("get_game resource ending");
+    debug!("get_game resource ending");
     result
 }
 
 fn process_service_error(error: GameServiceError) -> Status {
-    println!("Error: {}", error.message);
+    error!("Error: {}", error.message);
     match error.kind {
         GameServiceErrorKind::NotFound => Status::NotFound,
         GameServiceErrorKind::Internal => Status::InternalServerError,
@@ -67,6 +68,7 @@ fn process_service_error(error: GameServiceError) -> Status {
 mod tests {
     use crate::dto::game_dto::GameDto;
     use crate::resource::game_resource::{create_game, get_game, get_games};
+    use log::info;
     use rocket::async_test;
     use rocket::http::Status;
     use rocket::serde::json::Json;
@@ -75,16 +77,21 @@ mod tests {
     use testcontainers::clients::Cli;
     use testcontainers::GenericImage;
 
+    fn init() {
+        let _ = env_logger::builder().is_test(true).try_init();
+    }
+
     #[async_test]
     #[serial]
     async fn create_game_should_insert_game_entity_and_return_created_game() {
-        println!("Creating mongo container");
+        init();
+        info!("Creating mongo container");
         let docker = Cli::default();
         let container = docker.run(GenericImage::new("mongo", "latest"));
         let port = container.get_host_port_ipv4(27017);
         let uri = format!("mongodb://localhost:{}", port);
         env::set_var("MONGO_URI", uri.clone());
-        println!("Mongo container created");
+        info!("Mongo container created");
         let new_game = GameDto {
             id: None,
             topics: vec!["Java".to_string()],
@@ -111,13 +118,14 @@ mod tests {
     #[async_test]
     #[serial]
     async fn get_game_should_return_not_found_error() {
-        println!("Creating mongo container");
+        init();
+        info!("Creating mongo container");
         let docker = Cli::default();
         let container = docker.run(GenericImage::new("mongo", "latest"));
         let port = container.get_host_port_ipv4(27017);
         let uri = format!("mongodb://localhost:{}", port);
         env::set_var("MONGO_URI", uri.clone());
-        println!("Mongo container created");
+        info!("Mongo container created");
         let error = get_game("5f9e1b2a0b2b7c0009f9e1b9".to_string())
             .await
             .unwrap_err();
@@ -127,13 +135,14 @@ mod tests {
     #[async_test]
     #[serial]
     async fn get_game_should_return_db_connection_error() {
-        println!("Creating mongo container");
+        init();
+        info!("Creating mongo container");
         let docker = Cli::default();
         let container = docker.run(GenericImage::new("mongo", "latest"));
         let port = container.get_host_port_ipv4(27017);
         let uri = format!("mongodb://wronghost:{}", port);
         env::set_var("MONGO_URI", uri.clone());
-        println!("Mongo container created");
+        info!("Mongo container created");
         let error = get_game("5f9e1b2a0b2b7c0009f9e1b9".to_string())
             .await
             .unwrap_err();
@@ -143,13 +152,14 @@ mod tests {
     #[async_test]
     #[serial]
     async fn get_games_should_return_empty_result() {
-        println!("Creating mongo container");
+        init();
+        info!("Creating mongo container");
         let docker = Cli::default();
         let container = docker.run(GenericImage::new("mongo", "latest"));
         let port = container.get_host_port_ipv4(27017);
         let uri = format!("mongodb://localhost:{}", port);
         env::set_var("MONGO_URI", uri.clone());
-        println!("Mongo container created");
+        info!("Mongo container created");
         let games = get_games().await.unwrap().into_inner();
         assert_eq!(games.len(), 0);
     }
@@ -157,24 +167,25 @@ mod tests {
     #[async_test]
     #[serial]
     async fn get_games_should_return_the_created_games() {
-        println!("Creating mongo container");
+        init();
+        info!("Creating mongo container");
         let docker = Cli::default();
         let container = docker.run(GenericImage::new("mongo", "latest"));
         let port = container.get_host_port_ipv4(27017);
         let uri = format!("mongodb://localhost:{}", port);
         env::set_var("MONGO_URI", uri.clone());
-        println!("Mongo container created");
+        info!("Mongo container created");
         let new_game = GameDto {
             id: None,
             topics: vec!["Java".to_string()],
             question_number: 10,
             is_private: false,
         };
-        println!("Creating game 1");
+        info!("Creating game 1");
         let _ = create_game(Json(new_game.clone())).await;
-        println!("Creating game 2");
+        info!("Creating game 2");
         let _ = create_game(Json(new_game.clone())).await;
-        println!("Get games");
+        info!("Get games");
         let games = get_games().await.unwrap().into_inner();
         assert_eq!(games.len(), 2);
     }
