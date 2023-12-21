@@ -1,4 +1,5 @@
 mod dto;
+mod errors;
 mod fairing;
 mod mapper;
 mod model;

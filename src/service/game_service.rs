@@ -3,6 +3,8 @@ use crate::repository::game_repository::GameRepo;
 use mongodb::bson::oid::ObjectId;
 use rocket::futures::TryStreamExt;
 use std::str::FromStr;
+use mongodb::error::Error;
+use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 
 pub struct GameService {
     game_repo: GameRepo,
@@ -14,7 +16,7 @@ impl GameService {
         GameService { game_repo }
     }
 
-    pub async fn create_game(&self, game: Game) -> Result<Game, mongodb::error::Error> {
+    pub async fn create_game(&self, game: Game) -> Result<Game, GameServiceError> {
         println!("create_games service started");
         let insert = self.game_repo.create_game(game.clone()).await;
         let result = match insert {
@@ -23,40 +25,51 @@ impl GameService {
                 game.id = Some(insert.inserted_id.as_object_id().unwrap());
                 Ok(game)
             }
-            Err(err) => Err(err),
+            Err(err) => Err(Self::process_internal_error(err)),
         };
         println!("create_games service ending");
         result
     }
 
-    pub async fn get_games(&self) -> mongodb::error::Result<Vec<Game>> {
+    pub async fn get_games(&self) -> Result<Vec<Game>, GameServiceError> {
         println!("get_games service started");
         let result = match self.game_repo.get_games().await {
             Ok(mut games) => {
                 let mut games_output = vec![];
-                while let Some(game) = games.try_next().await? {
-                    games_output.push(game.clone());
-                }
+                match games.try_next().await {
+                    Ok(game) => match game {
+                        None => {}
+                        Some(game) => games_output.push(game.clone()),
+                    },
+                    Err(_) => {},
+                };
                 Ok(games_output)
             }
-            Err(err) => Err(err),
+            Err(err) => Err(Self::process_internal_error(err)),
         };
         println!("get_games service ending");
         result
     }
 
-    pub async fn get_game(&self, id: String) -> Result<Game, String> {
+    pub async fn get_game(&self, id: String) -> Result<Game, GameServiceError> {
         println!("get_game service started");
         let object_id =
             ObjectId::from_str(id.clone().as_str()).expect("Failed to create object id");
         let result = match self.game_repo.get_game(object_id).await {
             Ok(game) => match game {
-                None => Err(format!("Game with id {} does not exist", id)),
+                None => Err(GameServiceError {
+                    message: format!("Game with id {} does not exist", id),
+                    kind: GameServiceErrorKind::NotFound,
+                }),
                 Some(game) => Ok(game),
             },
-            Err(_) => Err("An error occurred.".to_string()),
+            Err(err) => Err(Self::process_internal_error(err)),
         };
         println!("get_game service ending");
         result
+    }
+
+    fn process_internal_error(err: Error) -> GameServiceError {
+        GameServiceError { message: err.to_string(), kind: GameServiceErrorKind::Internal }
     }
 }

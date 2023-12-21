@@ -4,6 +4,7 @@ use crate::service::game_service::GameService;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::{get, post};
+use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 
 #[post("/game", format = "json", data = "<new_game>")]
 pub async fn create_game(new_game: Json<GameDto>) -> Result<Json<GameDto>, Status> {
@@ -16,7 +17,7 @@ pub async fn create_game(new_game: Json<GameDto>) -> Result<Json<GameDto>, Statu
             let game_output = game_mapper::to_dto(game_created);
             Ok(Json(game_output))
         }
-        Err(_) => Err(Status::InternalServerError),
+        Err(err) => Err(process_service_error(err)),
     };
     println!("create_games resource ending");
     result
@@ -35,7 +36,7 @@ pub async fn get_games() -> Result<Json<Vec<GameDto>>, Status> {
                 .collect();
             Ok(Json(game_output))
         }
-        Err(_) => Err(Status::InternalServerError),
+        Err(err) => Err(process_service_error(err)),
     };
     println!("get_games resource ending");
     result
@@ -48,8 +49,16 @@ pub async fn get_game(id: String) -> Result<Json<GameDto>, Status> {
     let game_fetched = game_service.get_game(id).await;
     let result = match game_fetched {
         Ok(game_fetched) => Ok(Json(game_mapper::to_dto(game_fetched))),
-        Err(_) => Err(Status::NotFound),
+        Err(err) => Err(process_service_error(err)),
     };
     println!("get_game resource ending");
     result
+}
+
+fn process_service_error(error: GameServiceError) -> Status {
+    println!("Error: {}", error.message);
+    match error.kind {
+        GameServiceErrorKind::NotFound => Status::NotFound,
+        GameServiceErrorKind::Internal => Status::InternalServerError,
+    }
 }
