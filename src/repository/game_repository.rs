@@ -13,11 +13,13 @@ pub const MONGO_URI: &str = "MONGO_URI";
 pub const MONGO_DATABASE: &str = "CodingFighters";
 pub const GAME: &str = "Game";
 
+/// Repository for [Game] object to interact with the database
 pub struct GameRepo {
     col: Collection<Game>,
 }
 
 impl GameRepo {
+    /// Creates a new instance of [GameRepo] with the collection to interact with the database
     pub async fn init() -> Self {
         dotenv().ok();
         let uri = match env::var(MONGO_URI) {
@@ -37,6 +39,8 @@ impl GameRepo {
         GameRepo { col }
     }
 
+    /// Creates a new [Game] in the database.
+    /// Game id is generated automatically by the database and returned in the response.
     pub async fn create_game(&self, new_game: Game) -> mongodb::error::Result<InsertOneResult> {
         debug!("Creating game in DB");
         let game_created = self.col.insert_one(new_game, None).await;
@@ -44,6 +48,7 @@ impl GameRepo {
         game_created
     }
 
+    /// Gets all the [Game]s from the database.
     pub async fn get_games(&self) -> mongodb::error::Result<Cursor<Game>> {
         debug!("Getting games from DB");
         let games = self.col.find(None, None).await;
@@ -51,6 +56,9 @@ impl GameRepo {
         games
     }
 
+    /// Gets a [Game] by id from the database.
+    /// Returns an error if the game does not exist.
+    /// Returns an error if the id is not a valid ObjectId.
     pub async fn get_game(&self, id: ObjectId) -> mongodb::error::Result<Option<Game>> {
         debug!("Getting game by id from DB");
         let game = self.col.find_one(doc! {"_id": id}, None).await;

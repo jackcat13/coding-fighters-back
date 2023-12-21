@@ -7,6 +7,8 @@ use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::{get, post};
 
+/// POST request to create a new game.
+/// Returns the created game.
 #[post("/game", format = "json", data = "<new_game>")]
 pub async fn create_game(new_game: Json<GameDto>) -> Result<Json<GameDto>, Status> {
     debug!("create_games resource started");
@@ -24,6 +26,8 @@ pub async fn create_game(new_game: Json<GameDto>) -> Result<Json<GameDto>, Statu
     result
 }
 
+/// GET request to get all the games.
+/// Returns a list of games.
 #[get("/games", format = "json")]
 pub async fn get_games() -> Result<Json<Vec<GameDto>>, Status> {
     debug!("get_games resource started");
@@ -43,6 +47,10 @@ pub async fn get_games() -> Result<Json<Vec<GameDto>>, Status> {
     result
 }
 
+/// GET request to get a game by id.
+/// Returns the game.
+/// Returns an error if the game does not exist.
+/// Returns an error if the id is not a valid ObjectId.
 #[get("/game/<id>", format = "json")]
 pub async fn get_game(id: String) -> Result<Json<GameDto>, Status> {
     debug!("get_game resource started");

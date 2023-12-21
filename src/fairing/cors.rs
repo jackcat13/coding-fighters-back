@@ -4,6 +4,8 @@ use rocket::{Request, Response};
 
 pub struct Cors;
 
+///Fairing to add CORS headers to responses.
+///It is configured to allow all origins, methods, and headers to ease deployment from anywhere.
 #[rocket::async_trait]
 impl Fairing for Cors {
     fn info(&self) -> Info {
