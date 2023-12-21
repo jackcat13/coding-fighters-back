@@ -126,6 +126,22 @@ mod tests {
 
     #[async_test]
     #[serial]
+    async fn get_game_should_return_db_connection_error() {
+        println!("Creating mongo container");
+        let docker = Cli::default();
+        let container = docker.run(GenericImage::new("mongo", "latest"));
+        let port = container.get_host_port_ipv4(27017);
+        let uri = format!("mongodb://wronghost:{}", port);
+        env::set_var("MONGO_URI", uri.clone());
+        println!("Mongo container created");
+        let error = get_game("5f9e1b2a0b2b7c0009f9e1b9".to_string())
+            .await
+            .unwrap_err();
+        assert_eq!(error, Status::InternalServerError);
+    }
+
+    #[async_test]
+    #[serial]
     async fn get_games_should_return_empty_result() {
         println!("Creating mongo container");
         let docker = Cli::default();
