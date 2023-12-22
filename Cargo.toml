@@ -17,3 +17,8 @@ testcontainers-rs-images = "0.0.1"
 serial_test = "2.0.0"
 env_logger = "0.10.1"
 log = "0.4.20"
+tracing = "0.1.40"
+tracing-appender = "0.2.3"
+tracing-log = "0.2.0"
+tracing-subscriber = { version = "0.3.18", features=["env-filter", "json", "registry", "smallvec"] }
+uuid = "1.6.1"
