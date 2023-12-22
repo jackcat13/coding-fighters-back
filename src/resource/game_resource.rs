@@ -197,4 +197,42 @@ mod tests {
         let games = get_games().await.unwrap().into_inner();
         assert_eq!(games.len(), 2);
     }
+
+    #[async_test]
+    #[serial]
+    async fn get_games_should_return_only_public_games() {
+        init();
+        info!("Creating mongo container");
+        let docker = Cli::default();
+        let container = docker.run(GenericImage::new("mongo", "latest"));
+        let port = container.get_host_port_ipv4(27017);
+        let uri = format!("mongodb://localhost:{}", port);
+        env::set_var("MONGO_URI", uri.clone());
+        info!("Mongo container created");
+        let new_game = GameDto {
+            id: None,
+            topics: vec!["Java".to_string()],
+            question_number: 10,
+            is_private: false,
+        };
+        let new_game_private = GameDto {
+            id: None,
+            topics: vec!["Java".to_string()],
+            question_number: 10,
+            is_private: true,
+        };
+        info!("Creating game 1");
+        let _ = create_game(Json(new_game.clone())).await;
+        info!("Creating game 2");
+        let _ = create_game(Json(new_game.clone())).await;
+        info!("Creating game 3");
+        let _ = create_game(Json(new_game_private.clone())).await;
+        info!("Creating game 4");
+        let _ = create_game(Json(new_game_private.clone())).await;
+        info!("Creating game 5");
+        let _ = create_game(Json(new_game.clone())).await;
+        info!("Get games");
+        let games = get_games().await.unwrap().into_inner();
+        assert_eq!(games.len(), 3);
+    }
 }

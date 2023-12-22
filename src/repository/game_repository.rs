@@ -49,9 +49,11 @@ impl GameRepo {
     }
 
     /// Gets all the [Game]s from the database.
+    /// Returns an empty list if there are no games.
+    /// Returns only public games.
     pub async fn get_games(&self) -> mongodb::error::Result<Cursor<Game>> {
         debug!("Getting games from DB");
-        let games = self.col.find(None, None).await;
+        let games = self.col.find(doc!("is_private": false), None).await;
         info!("Games retrieved from DB");
         games
     }
