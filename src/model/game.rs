@@ -9,4 +9,5 @@ pub struct Game {
     pub topics: Vec<String>,
     pub question_number: i8,
     pub is_private: bool,
+    pub is_started: bool,
 }

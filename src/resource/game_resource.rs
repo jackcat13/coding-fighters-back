@@ -105,6 +105,7 @@ mod tests {
             topics: vec!["Java".to_string()],
             question_number: 10,
             is_private: false,
+            is_started: false,
         };
         let game_created = create_game(Json(new_game)).await.unwrap().into_inner();
         assert_eq!(game_created.id.is_some(), true);
@@ -188,6 +189,7 @@ mod tests {
             topics: vec!["Java".to_string()],
             question_number: 10,
             is_private: false,
+            is_started: false,
         };
         info!("Creating game 1");
         let _ = create_game(Json(new_game.clone())).await;
@@ -200,7 +202,7 @@ mod tests {
 
     #[async_test]
     #[serial]
-    async fn get_games_should_return_only_public_games() {
+    async fn get_games_should_return_only_public_and_not_started_games() {
         init();
         info!("Creating mongo container");
         let docker = Cli::default();
@@ -214,12 +216,21 @@ mod tests {
             topics: vec!["Java".to_string()],
             question_number: 10,
             is_private: false,
+            is_started: false,
         };
         let new_game_private = GameDto {
             id: None,
             topics: vec!["Java".to_string()],
             question_number: 10,
             is_private: true,
+            is_started: false,
+        };
+        let new_game_started = GameDto {
+            id: None,
+            topics: vec!["Java".to_string()],
+            question_number: 10,
+            is_private: false,
+            is_started: true,
         };
         info!("Creating game 1");
         let _ = create_game(Json(new_game.clone())).await;
@@ -231,6 +242,8 @@ mod tests {
         let _ = create_game(Json(new_game_private.clone())).await;
         info!("Creating game 5");
         let _ = create_game(Json(new_game.clone())).await;
+        info!("Creating game 6");
+        let _ = create_game(Json(new_game_started.clone())).await;
         info!("Get games");
         let games = get_games().await.unwrap().into_inner();
         assert_eq!(games.len(), 3);
