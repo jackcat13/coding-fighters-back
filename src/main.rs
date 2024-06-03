@@ -10,7 +10,7 @@ mod service;
 use crate::fairing::cors::Cors;
 use crate::fairing::logging::{default_logging_layer, json_logging_layer, LogType};
 use crate::fairing::tracing::TracingFairing;
-use crate::resource::game_resource::{get_game, get_games};
+use crate::resource::game_resource::{get_game, get_games, patch_game};
 use resource::game_resource::create_game;
 use rocket::config::LogLevel;
 use rocket::{get, routes, Build, Rocket};
@@ -79,6 +79,7 @@ fn build_rocket() -> Rocket<Build> {
         .mount("/", routes![create_game])
         .mount("/", routes![get_games])
         .mount("/", routes![get_game])
+        .mount("/", routes![patch_game])
         .attach(Cors)
         .attach(TracingFairing)
 }

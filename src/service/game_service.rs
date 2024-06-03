@@ -61,16 +61,35 @@ impl GameService {
             ObjectId::from_str(id.clone().as_str()).expect("Failed to create object id");
         let result = match self.game_repo.get_game(object_id).await {
             Ok(game) => match game {
-                None => Err(GameServiceError {
-                    message: format!("Game with id {} does not exist", id),
-                    kind: GameServiceErrorKind::NotFound,
-                }),
+                None => Err(Self::process_not_found_error(id)),
                 Some(game) => Ok(game),
             },
             Err(err) => Err(Self::process_internal_error(err)),
         };
         debug!("get_game service ending");
         result
+    }
+
+    /// Patches a [Game] by id.
+    /// Returns an error if the game does not exist.
+    /// Returns an error if the id is not a valid ObjectId.
+    pub async fn patch_game(&self, id: String, game: Game) -> Result<Game, GameServiceError> {
+        debug!("patch_game service started");
+        let object_id =
+            ObjectId::from_str(id.clone().as_str()).expect("Failed to create object id");
+        let result = match self.game_repo.patch_game(object_id, game.clone()).await {
+            Ok(_) => Ok(game),
+            Err(err) => Err(Self::process_internal_error(err)),
+        };
+        debug!("patch_game service ending");
+        result
+    }
+
+    fn process_not_found_error(id: String) -> GameServiceError {
+        GameServiceError {
+            message: format!("Game with id {} does not exist", id),
+            kind: GameServiceErrorKind::NotFound,
+        }
     }
 
     fn process_internal_error(err: Error) -> GameServiceError {
