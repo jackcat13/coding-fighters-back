@@ -1,11 +1,15 @@
 use crate::dto::game_dto::GameDto;
+use crate::dto::game_progress_dto::{GameProgressDto, QuestionDto};
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::mapper::game_mapper;
 use crate::service::game_service::GameService;
 use log::{debug, error};
 use rocket::http::Status;
+use rocket::response::stream::{Event, EventStream};
 use rocket::serde::json::Json;
+use rocket::tokio::time;
 use rocket::{get, patch, post};
+use std::time::Duration;
 
 /// POST request to create a new game.
 /// Returns the created game.
@@ -62,6 +66,47 @@ pub async fn get_game(id: String) -> Result<Json<GameDto>, Status> {
     };
     debug!("get_game resource ending");
     result
+}
+
+/// GET request to get a game progress.
+/// Returns events to sync game progress with clients.
+/// Returns an error if the game does not exist.
+/// Returns an error if the id is not a valid ObjectId.
+#[get("/game/<id>/progress", format = "json")]
+pub async fn game_progress(id: String) -> EventStream![] {
+    EventStream! {
+        debug!("game_progress events started");
+        let mut interval = time::interval(Duration::from_secs(1));
+        loop {
+            match get_game(id.clone()).await {
+                Ok(result) => if result.is_started { break },
+                Err(_) => error!("Problem occurred when fetching game in sse game progress"),
+            }
+            yield Event::data("NOT STARTED");
+            interval.tick().await;
+        }
+        loop {
+            match get_game(id.clone()).await {
+                Ok(result) => {
+                    let progress = GameProgressDto {
+                        current_question: 1,
+                        question_number: result.question_number,
+                        question_content: QuestionDto {
+                            question_text: "TODO".to_string(),
+                            answer_1: "TODO".to_string(),
+                            answer_2: "TODO".to_string(),
+                            answer_3: "TODO".to_string(),
+                            answer_4: "TODO".to_string(),
+                            good_answer_number: 1,
+                        }
+                    };
+                    yield Event::json(&progress);
+                },
+                Err(_) => error!("Problem occurred when fetching game in sse game progress"),
+            }
+            interval.tick().await;
+        }
+    }
 }
 
 /// PATCH request to update a game content.
