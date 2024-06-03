@@ -106,12 +106,15 @@ mod tests {
             question_number: 10,
             is_private: false,
             is_started: false,
+            creator: Some("bob".to_string()),
         };
         let game_created = create_game(Json(new_game)).await.unwrap().into_inner();
         assert_eq!(game_created.id.is_some(), true);
         assert_eq!(game_created.topics, vec!["Java"]);
         assert_eq!(game_created.question_number, 10);
         assert_eq!(game_created.is_private, false);
+        assert_eq!(game_created.is_started, false);
+        assert_eq!(game_created.creator, Some("bob".to_string()));
 
         //Verify that the game was inserted in the DB
         let game_db = get_game(game_created.id.unwrap())
@@ -190,6 +193,7 @@ mod tests {
             question_number: 10,
             is_private: false,
             is_started: false,
+            creator: Some("bob".to_string()),
         };
         info!("Creating game 1");
         let _ = create_game(Json(new_game.clone())).await;
@@ -217,6 +221,7 @@ mod tests {
             question_number: 10,
             is_private: false,
             is_started: false,
+            creator: Some("bob".to_string()),
         };
         let new_game_private = GameDto {
             id: None,
@@ -224,6 +229,7 @@ mod tests {
             question_number: 10,
             is_private: true,
             is_started: false,
+            creator: Some("bob".to_string()),
         };
         let new_game_started = GameDto {
             id: None,
@@ -231,6 +237,7 @@ mod tests {
             question_number: 10,
             is_private: false,
             is_started: true,
+            creator: Some("bob".to_string()),
         };
         info!("Creating game 1");
         let _ = create_game(Json(new_game.clone())).await;
