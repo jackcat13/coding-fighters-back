@@ -5,7 +5,7 @@ use crate::service::game_service::GameService;
 use log::{debug, error};
 use rocket::http::Status;
 use rocket::serde::json::Json;
-use rocket::{get, post};
+use rocket::{get, patch, post};
 
 /// POST request to create a new game.
 /// Returns the created game.
@@ -64,6 +64,24 @@ pub async fn get_game(id: String) -> Result<Json<GameDto>, Status> {
     result
 }
 
+/// PATCH request to update a game content.
+/// Returns the game.
+/// Returns an error if the game does not exist.
+/// Returns an error if the id is not a valid ObjectId.
+#[patch("/game/<id>", format = "json", data = "<game>")]
+pub async fn patch_game(id: String, game: Json<GameDto>) -> Result<Json<GameDto>, Status> {
+    debug!("patch_game resource started");
+    let game_entity = game_mapper::to_entity(game.into_inner());
+    let game_service = GameService::init().await;
+    let game_fetched = game_service.patch_game(id, game_entity).await;
+    let result = match game_fetched {
+        Ok(game_fetched) => Ok(Json(game_mapper::to_dto(game_fetched))),
+        Err(err) => Err(process_service_error(err)),
+    };
+    debug!("patch_game resource ending");
+    result
+}
+
 fn process_service_error(error: GameServiceError) -> Status {
     error!("Error: {}", error.message);
     match error.kind {
@@ -75,7 +93,7 @@ fn process_service_error(error: GameServiceError) -> Status {
 #[cfg(test)]
 mod tests {
     use crate::dto::game_dto::GameDto;
-    use crate::resource::game_resource::{create_game, get_game, get_games};
+    use crate::resource::game_resource::{create_game, get_game, get_games, patch_game};
     use log::info;
     use rocket::async_test;
     use rocket::http::Status;
@@ -254,5 +272,44 @@ mod tests {
         info!("Get games");
         let games = get_games().await.unwrap().into_inner();
         assert_eq!(games.len(), 3);
+    }
+
+    #[async_test]
+    #[serial]
+    async fn patch_game_should_modify_existing_game() {
+        init();
+        info!("Creating mongo container");
+        let docker = Cli::default();
+        let container = docker.run(GenericImage::new("mongo", "latest"));
+        let port = container.get_host_port_ipv4(27017);
+        let uri = format!("mongodb://localhost:{}", port);
+        env::set_var("MONGO_URI", uri.clone());
+        info!("Mongo container created");
+        let new_game = GameDto {
+            id: None,
+            topics: vec!["Java".to_string()],
+            question_number: 10,
+            is_private: false,
+            is_started: false,
+            creator: Some("bob".to_string()),
+        };
+        let game_created = create_game(Json(new_game)).await.unwrap().into_inner();
+        assert_eq!(game_created.is_started, false);
+
+        //Update the game
+        let game_id = game_created.id.expect("Failed to get game id");
+        let game_modif = GameDto {
+            id: Some(game_id.clone()),
+            topics: vec!["Java".to_string()],
+            question_number: 10,
+            is_private: false,
+            is_started: true,
+            creator: Some("bob".to_string()),
+        };
+        let _ = patch_game(game_id.clone(), Json(game_modif)).await;
+
+        //Verify that the game was inserted in the DB
+        let game_db = get_game(game_id).await.unwrap().into_inner();
+        assert_eq!(game_db.is_started, true);
     }
 }

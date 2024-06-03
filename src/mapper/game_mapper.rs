@@ -1,10 +1,15 @@
 use crate::dto::game_dto::GameDto;
 use crate::model::game::Game;
+use mongodb::bson::oid::ObjectId;
+use std::str::FromStr;
 
 ///this mapper is used to map between the [GameDto](crate::dto::game_dto::GameDto) and [Game](crate::model::game::Game) models
 pub fn to_entity(game_dto: GameDto) -> Game {
+    let id = game_dto
+        .id
+        .map(|id| ObjectId::from_str(id.as_str()).expect("Failed to get object id from id string"));
     Game {
-        id: None,
+        id,
         topics: game_dto.topics,
         question_number: game_dto.question_number,
         is_private: game_dto.is_private,

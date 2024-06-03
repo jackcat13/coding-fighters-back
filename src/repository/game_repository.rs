@@ -1,4 +1,4 @@
-use mongodb::results::InsertOneResult;
+use mongodb::results::{InsertOneResult, UpdateResult};
 use mongodb::{Client, Collection, Cursor};
 use std::env;
 extern crate dotenv;
@@ -68,6 +68,21 @@ impl GameRepo {
         debug!("Getting game by id from DB");
         let game = self.col.find_one(doc! {"_id": id}, None).await;
         info!("Game retrieved by id from DB");
+        game
+    }
+
+    /// Patches a [Game] by id from the database.
+    /// Returns an error if the game does not exist.
+    /// Returns an error if the id is not a valid ObjectId.
+    pub async fn patch_game(
+        &self,
+        id: ObjectId,
+        game: Game,
+    ) -> mongodb::error::Result<UpdateResult> {
+        debug!("Patching game by id from DB");
+        let update = doc! { "$set": doc! {"is_started": game.is_started} };
+        let game = self.col.update_one(doc! {"_id": id}, update, None).await;
+        info!("Game patched from DB");
         game
     }
 }
