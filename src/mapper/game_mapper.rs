@@ -9,6 +9,7 @@ pub fn to_entity(game_dto: GameDto) -> Game {
         question_number: game_dto.question_number,
         is_private: game_dto.is_private,
         is_started: game_dto.is_started,
+        creator: game_dto.creator,
     }
 }
 
@@ -20,5 +21,6 @@ pub fn to_dto(game: Game) -> GameDto {
         question_number: game.question_number,
         is_private: game.is_private,
         is_started: game.is_started,
+        creator: game.creator,
     }
 }
