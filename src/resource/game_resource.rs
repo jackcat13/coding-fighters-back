@@ -72,7 +72,7 @@ pub async fn get_game(id: String) -> Result<Json<GameDto>, Status> {
 /// Returns events to sync game progress with clients.
 /// Returns an error if the game does not exist.
 /// Returns an error if the id is not a valid ObjectId.
-#[get("/game/<id>/progress", format = "json")]
+#[get("/game/<id>/progress")]
 pub async fn game_progress(id: String) -> EventStream![] {
     EventStream! {
         debug!("game_progress events started");
