@@ -74,13 +74,9 @@ impl GameRepo {
     /// Patches a [Game] by id from the database.
     /// Returns an error if the game does not exist.
     /// Returns an error if the id is not a valid ObjectId.
-    pub async fn patch_game(
-        &self,
-        id: ObjectId,
-        game: Game,
-    ) -> mongodb::error::Result<UpdateResult> {
+    pub async fn patch_game(&self, id: ObjectId) -> mongodb::error::Result<UpdateResult> {
         debug!("Patching game by id from DB");
-        let update = doc! { "$set": doc! {"is_started": game.is_started} };
+        let update = doc! { "$set": doc! {"is_started": true} };
         let game = self.col.update_one(doc! {"_id": id}, update, None).await;
         info!("Game patched from DB");
         game

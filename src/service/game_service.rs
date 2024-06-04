@@ -73,12 +73,12 @@ impl GameService {
     /// Patches a [Game] by id.
     /// Returns an error if the game does not exist.
     /// Returns an error if the id is not a valid ObjectId.
-    pub async fn patch_game(&self, id: String, game: Game) -> Result<Game, GameServiceError> {
+    pub async fn patch_game(&self, id: String) -> Result<String, GameServiceError> {
         debug!("patch_game service started");
         let object_id =
             ObjectId::from_str(id.clone().as_str()).expect("Failed to create object id");
-        let result = match self.game_repo.patch_game(object_id, game.clone()).await {
-            Ok(_) => Ok(game),
+        let result = match self.game_repo.patch_game(object_id).await {
+            Ok(_) => Ok("".to_string()),
             Err(err) => Err(Self::process_internal_error(err)),
         };
         debug!("patch_game service ending");
