@@ -113,14 +113,13 @@ pub async fn game_progress(id: String) -> EventStream![] {
 /// Returns the game.
 /// Returns an error if the game does not exist.
 /// Returns an error if the id is not a valid ObjectId.
-#[patch("/game/<id>", format = "json", data = "<game>")]
-pub async fn patch_game(id: String, game: Json<GameDto>) -> Result<Json<GameDto>, Status> {
+#[patch("/game/<id>", format = "json")]
+pub async fn patch_game(id: String) -> Result<Json<String>, Status> {
     debug!("patch_game resource started");
-    let game_entity = game_mapper::to_entity(game.into_inner());
     let game_service = GameService::init().await;
-    let game_fetched = game_service.patch_game(id, game_entity).await;
+    let game_fetched = game_service.patch_game(id).await;
     let result = match game_fetched {
-        Ok(game_fetched) => Ok(Json(game_mapper::to_dto(game_fetched))),
+        Ok(_) => Ok(Json("".to_string())),
         Err(err) => Err(process_service_error(err)),
     };
     debug!("patch_game resource ending");
@@ -343,7 +342,7 @@ mod tests {
 
         //Update the game
         let game_id = game_created.id.expect("Failed to get game id");
-        let game_modif = GameDto {
+        let _ = GameDto {
             id: Some(game_id.clone()),
             topics: vec!["Java".to_string()],
             question_number: 10,
@@ -351,7 +350,7 @@ mod tests {
             is_started: true,
             creator: Some("bob".to_string()),
         };
-        let _ = patch_game(game_id.clone(), Json(game_modif)).await;
+        let _ = patch_game(game_id.clone()).await;
 
         //Verify that the game was inserted in the DB
         let game_db = get_game(game_id).await.unwrap().into_inner();
