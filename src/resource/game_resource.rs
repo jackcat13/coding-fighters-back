@@ -1,13 +1,15 @@
 use crate::dto::game_dto::GameDto;
-use crate::dto::game_progress_dto::{GameProgressDto, QuestionDto};
+use crate::dto::game_progress_dto::{questions, GameProgressDto};
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::mapper::game_mapper;
+use crate::mapper::game_mapper::progress_to_entity;
 use crate::service::game_service::GameService;
-use log::{debug, error};
+use log::{debug, error, info};
+use rand::Rng;
 use rocket::http::Status;
 use rocket::response::stream::{Event, EventStream};
 use rocket::serde::json::Json;
-use rocket::tokio::time;
+use rocket::tokio::{task, time};
 use rocket::{get, patch, post};
 use std::time::Duration;
 
@@ -79,28 +81,17 @@ pub async fn game_progress(id: String) -> EventStream![] {
         let mut interval = time::interval(Duration::from_secs(1));
         loop {
             match get_game(id.clone()).await {
-                Ok(result) => if result.is_started { break },
+                Ok(result) => if result.is_started {break},
                 Err(_) => error!("Problem occurred when fetching game in sse game progress"),
             }
             yield Event::data("NOT STARTED");
             interval.tick().await;
         }
         loop {
-            match get_game(id.clone()).await {
+            let game_service = GameService::init().await;
+            match game_service.get_game_progress(id.clone()).await {
                 Ok(result) => {
-                    let progress = GameProgressDto {
-                        current_question: 1,
-                        question_number: result.question_number,
-                        question_content: QuestionDto {
-                            question_text: "TODO".to_string(),
-                            answer_1: "TODO".to_string(),
-                            answer_2: "TODO".to_string(),
-                            answer_3: "TODO".to_string(),
-                            answer_4: "TODO".to_string(),
-                            good_answer_number: 1,
-                        }
-                    };
-                    yield Event::json(&progress);
+                    yield Event::json(&result);
                 },
                 Err(_) => error!("Problem occurred when fetching game in sse game progress"),
             }
@@ -117,13 +108,49 @@ pub async fn game_progress(id: String) -> EventStream![] {
 pub async fn patch_game(id: String) -> Result<Json<String>, Status> {
     debug!("patch_game resource started");
     let game_service = GameService::init().await;
-    let game_fetched = game_service.patch_game(id).await;
+    let game_fetched = game_service.patch_game(id.clone()).await;
     let result = match game_fetched {
-        Ok(_) => Ok(Json("".to_string())),
+        Ok(_) => {
+            task::spawn(async move { start_new_game(id.clone()).await });
+            Ok(Json("".to_string()))
+        }
         Err(err) => Err(process_service_error(err)),
     };
     debug!("patch_game resource ending");
     result
+}
+
+async fn start_new_game(id: String) {
+    info!("Starting the game");
+    let questions = questions();
+    let game_service = GameService::init().await;
+    let game = game_service.get_game(id.clone()).await;
+    if let Ok(game) = game {
+        let random_index = rand::thread_rng().gen_range(0..questions.len());
+        let question = questions.get(random_index).unwrap().clone();
+        let mut game_proress_dto = GameProgressDto {
+            game_id: game.id.unwrap().to_string(),
+            current_question: 1,
+            question_number: game.question_number,
+            question_content: question.clone(),
+        };
+        let game_progress_entity = progress_to_entity(game_proress_dto.clone());
+        game_service.save_game_progress(&game_progress_entity).await;
+        let mut interval = time::interval(Duration::from_secs(20));
+        for _ in 1..game_proress_dto.question_number {
+            info!("Next question");
+            interval.tick().await;
+            game_proress_dto.current_question += 1;
+            let random_index = rand::thread_rng().gen_range(0..questions.len());
+            game_proress_dto.question_content =
+                questions.get(random_index).unwrap().clone().clone();
+            let game_progress_entity = progress_to_entity(game_proress_dto.clone());
+            game_service
+                .replace_game_progress(&game_progress_entity)
+                .await;
+        }
+    }
+    info!("End of the game");
 }
 
 fn process_service_error(error: GameServiceError) -> Status {
