@@ -1,5 +1,7 @@
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::model::game::Game;
+use crate::model::game_progress::GameProgress;
+use crate::repository::game_progress_repository::GameProgressRepo;
 use crate::repository::game_repository::GameRepo;
 use log::debug;
 use mongodb::bson::oid::ObjectId;
@@ -10,13 +12,18 @@ use std::str::FromStr;
 /// Service for [Game] object to interact with the data layer
 pub struct GameService {
     game_repo: GameRepo,
+    game_progress_repo: GameProgressRepo,
 }
 
 impl GameService {
     /// Creates a new instance of [GameService] with the repository to interact with the data layer
     pub async fn init() -> Self {
         let game_repo = GameRepo::init().await;
-        GameService { game_repo }
+        let game_progress_repo = GameProgressRepo::init().await;
+        GameService {
+            game_repo,
+            game_progress_repo,
+        }
     }
 
     /// Creates a new [Game].
@@ -82,6 +89,30 @@ impl GameService {
             Err(err) => Err(Self::process_internal_error(err)),
         };
         debug!("patch_game service ending");
+        result
+    }
+
+    /// Saves the game_progress of a particular game
+    pub async fn save_game_progress(&self, game_progress: &GameProgress) {
+        debug!("save_game_progress service started");
+        let _ = self
+            .game_progress_repo
+            .save_game_progress(game_progress.clone())
+            .await;
+        debug!("save_game_progress service ending");
+    }
+
+    /// Gets the game_progress of a particular game
+    pub async fn get_game_progress(&self, id: String) -> Result<GameProgress, GameServiceError> {
+        debug!("get_game_progress service started");
+        let result = match self.game_progress_repo.get_game_progress(id.clone()).await {
+            Ok(progress) => match progress {
+                None => Err(Self::process_not_found_error(id)),
+                Some(progress) => Ok(progress),
+            },
+            Err(err) => Err(Self::process_internal_error(err)),
+        };
+        debug!("get_game_progress service ending");
         result
     }
 
