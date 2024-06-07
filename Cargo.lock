@@ -336,6 +336,7 @@ dependencies = [
  "http 1.0.0",
  "log",
  "mongodb",
+ "rand",
  "rocket",
  "serde",
  "serial_test",
