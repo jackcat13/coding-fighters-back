@@ -1,6 +1,8 @@
+use crate::dto::answer::GameAnswerDto;
 use crate::dto::game_dto::GameDto;
 use crate::dto::game_progress_dto::GameProgressDto;
 use crate::model::game::Game;
+use crate::model::game_answer::GameAnswer;
 use crate::model::game_progress::{GameProgress, Question};
 use mongodb::bson::oid::ObjectId;
 use std::str::FromStr;
@@ -47,5 +49,14 @@ pub fn progress_to_entity(game_progress_dto: GameProgressDto) -> GameProgress {
             good_answer_number: question.good_answer_number,
             topic: question.topic,
         },
+    }
+}
+
+pub fn answer_to_entity(game_answer_dto: GameAnswerDto) -> GameAnswer {
+    GameAnswer {
+        game_id: game_answer_dto.game_id,
+        answer: game_answer_dto.answer,
+        user: game_answer_dto.user,
+        question_index: game_answer_dto.question_index,
     }
 }

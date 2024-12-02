@@ -1,8 +1,9 @@
+use crate::dto::answer::GameAnswerDto;
 use crate::dto::game_dto::GameDto;
 use crate::dto::game_progress_dto::{questions, GameProgressDto};
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
-use crate::mapper::game_mapper;
 use crate::mapper::game_mapper::progress_to_entity;
+use crate::mapper::game_mapper::{self, answer_to_entity};
 use crate::service::game_service::GameService;
 use log::{debug, error, info};
 use rand::Rng;
@@ -101,11 +102,24 @@ pub async fn game_progress(id: String) -> EventStream![] {
 }
 
 /// POST request to save resonse of a player
-#[post("/game/<id>/progress/<answer>")]
-pub async fn game_progress_answer(id: String, answer: u8) {
+#[post("/game/<id>/progress/<answer>", format = "json", data = "<user>")]
+pub async fn game_progress_answer(id: String, answer: i8, user: String) {
     debug!("game_progress_answer started");
+    let game_service = GameService::init().await;
+    let game_progress = game_service
+        .get_game_progress(id.clone())
+        .await
+        .expect("Failed to get game progress");
+    let answer = GameAnswerDto {
+        game_id: id,
+        user,
+        answer,
+        question_index: game_progress.current_question,
+    };
+    let answer = answer_to_entity(answer);
+    game_service.save_game_answer(&answer).await;
     debug!("game_progress_answer ending");
-} 
+}
 
 /// PATCH request to update a game content.
 /// Returns the game.

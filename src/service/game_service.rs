@@ -1,6 +1,8 @@
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::model::game::Game;
+use crate::model::game_answer::GameAnswer;
 use crate::model::game_progress::GameProgress;
+use crate::repository::game_answer_repository::GameAnswerRepo;
 use crate::repository::game_progress_repository::GameProgressRepo;
 use crate::repository::game_repository::GameRepo;
 use log::debug;
@@ -13,6 +15,7 @@ use std::str::FromStr;
 pub struct GameService {
     game_repo: GameRepo,
     game_progress_repo: GameProgressRepo,
+    game_answer_repo: GameAnswerRepo,
 }
 
 impl GameService {
@@ -20,9 +23,11 @@ impl GameService {
     pub async fn init() -> Self {
         let game_repo = GameRepo::init().await;
         let game_progress_repo = GameProgressRepo::init().await;
+        let game_answer_repo = GameAnswerRepo::init().await;
         GameService {
             game_repo,
             game_progress_repo,
+            game_answer_repo,
         }
     }
 
@@ -124,6 +129,16 @@ impl GameService {
         };
         debug!("get_game_progress service ending");
         result
+    }
+
+    /// Gets the game answers of a particular game
+    pub async fn save_game_answer(&self, game_answer: &GameAnswer) {
+        debug!("save_game_answers service started");
+        let _ = self
+            .game_answer_repo
+            .save_game_answer(game_answer.clone())
+            .await;
+        debug!("save_game_answers service ending");
     }
 
     fn process_not_found_error(id: String) -> GameServiceError {
