@@ -152,7 +152,7 @@ pub async fn patch_game(id: String) -> Result<Json<String>, Status> {
 /// Returns the game result.
 /// Returns an error if the game does not exist.
 /// Returns an error if the id is not a valid ObjectId.
-#[get("/game/<id>/result", format = "json")]
+#[get("/game/<id>/answers", format = "json")]
 pub async fn get_game_answers(id: String) -> Result<Json<Vec<GameAnswerDto>>, Status> {
     debug!("get_game_result resource started");
     let game_service = GameService::init().await;
