@@ -100,6 +100,13 @@ pub async fn game_progress(id: String) -> EventStream![] {
     }
 }
 
+/// POST request to save resonse of a player
+#[post("/game/<id>/progress/<answer>")]
+pub async fn game_progress_answer(id: String, answer: u8) {
+    debug!("game_progress_answer started");
+    debug!("game_progress_answer ending");
+} 
+
 /// PATCH request to update a game content.
 /// Returns the game.
 /// Returns an error if the game does not exist.
@@ -130,16 +137,16 @@ async fn start_new_game(id: String) {
         let question = questions.get(random_index).unwrap().clone();
         let mut game_proress_dto = GameProgressDto {
             game_id: game.id.unwrap().to_string(),
-            current_question: 1,
+            current_question: 0,
             question_number: game.question_number,
             question_content: question.clone(),
         };
         let game_progress_entity = progress_to_entity(game_proress_dto.clone());
         game_service.save_game_progress(&game_progress_entity).await;
         let mut interval = time::interval(Duration::from_secs(20));
-        for _ in 1..game_proress_dto.question_number {
-            info!("Next question");
+        for _ in 0..game_proress_dto.question_number {
             interval.tick().await;
+            info!("Next question");
             game_proress_dto.current_question += 1;
             let random_index = rand::thread_rng().gen_range(0..questions.len());
             game_proress_dto.question_content =
