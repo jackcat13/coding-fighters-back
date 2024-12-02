@@ -1,6 +1,8 @@
 use rocket::serde::{Deserialize, Serialize};
 use std::string::ToString;
 
+use crate::resource::game_resource::QUESTION_SECONDS;
+
 ///GameProgressDto is used to interact with the game frontend in the [GameResource](crate::resource::game_resource::GameResource)
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct GameProgressDto {
@@ -20,6 +22,7 @@ pub struct QuestionDto {
     pub answer_4: String,
     pub good_answer_number: i8,
     pub topic: String,
+    pub remaing_time: u64,
 }
 
 pub fn questions() -> Vec<QuestionDto> {
@@ -32,6 +35,7 @@ pub fn questions() -> Vec<QuestionDto> {
             answer_4: "char".to_string(),
             good_answer_number: 3,
             topic: "Java".to_string(),
+            remaing_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What statement is true ?".to_string(),
@@ -46,6 +50,7 @@ pub fn questions() -> Vec<QuestionDto> {
             answer_4: "A class must implement one interface and must extend one class".to_string(),
             good_answer_number: 1,
             topic: "Java".to_string(),
+            remaing_time: QUESTION_SECONDS,
         },
     ]
 }

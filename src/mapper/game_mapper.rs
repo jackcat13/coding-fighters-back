@@ -48,6 +48,7 @@ pub fn progress_to_entity(game_progress_dto: GameProgressDto) -> GameProgress {
             answer_4: question.answer_4,
             good_answer_number: question.good_answer_number,
             topic: question.topic,
+            remaining_time: question.remaing_time,
         },
     }
 }

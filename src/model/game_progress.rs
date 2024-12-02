@@ -19,4 +19,5 @@ pub struct Question {
     pub answer_4: String,
     pub good_answer_number: i8,
     pub topic: String,
+    pub remaining_time: u64,
 }

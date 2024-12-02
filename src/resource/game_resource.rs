@@ -14,7 +14,7 @@ use rocket::tokio::{task, time};
 use rocket::{get, patch, post};
 use std::time::Duration;
 
-const QUESTION_SECONDS: u64 = 20;
+pub const QUESTION_SECONDS: u64 = 20;
 
 /// POST request to create a new game.
 /// Returns the created game.
@@ -91,19 +91,17 @@ pub async fn game_progress(id: String) -> EventStream![] {
             interval.tick().await;
         }
         let game_service = GameService::init().await;
-        let current = game_service.get_game_progress(id.clone()).await.expect("Failed to get game progress");
-        let mut round = 0;
-        let end = current.question_number as i64 * QUESTION_SECONDS as i64;
-        while round < end {
+        let mut current = game_service.get_game_progress(id.clone()).await.expect("Failed to get game progress");
+        while current.current_question < current.question_number && current.question_content.remaining_time > 0 {
             let game_service = GameService::init().await;
             match game_service.get_game_progress(id.clone()).await {
                 Ok(result) => {
+                    current = result.clone();
                     yield Event::json(&result);
                 },
                 Err(_) => error!("Problem occurred when fetching game in sse game progress"),
             }
             interval.tick().await;
-            round += 1;
         }
         yield Event::data("END");
     }
@@ -165,9 +163,16 @@ async fn start_new_game(id: String) {
         };
         let game_progress_entity = progress_to_entity(game_proress_dto.clone());
         game_service.save_game_progress(&game_progress_entity).await;
-        let mut interval = time::interval(Duration::from_secs(QUESTION_SECONDS));
+        let mut interval = time::interval(Duration::from_secs(1));
         for _ in 0..game_proress_dto.question_number {
-            interval.tick().await;
+            for _ in 0..QUESTION_SECONDS {
+                interval.tick().await;
+                game_proress_dto.question_content.remaing_time -= 1;
+                let game_progress_entity = progress_to_entity(game_proress_dto.clone());
+                game_service
+                    .replace_game_progress(&game_progress_entity)
+                    .await;
+            }
             info!("Next question");
             game_proress_dto.current_question += 1;
             let random_index = rand::thread_rng().gen_range(0..questions.len());
