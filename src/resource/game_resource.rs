@@ -14,6 +14,8 @@ use rocket::tokio::{task, time};
 use rocket::{get, patch, post};
 use std::time::Duration;
 
+const QUESTION_SECONDS: u64 = 20;
+
 /// POST request to create a new game.
 /// Returns the created game.
 #[post("/game", format = "json", data = "<new_game>")]
@@ -88,7 +90,11 @@ pub async fn game_progress(id: String) -> EventStream![] {
             yield Event::data("NOT STARTED");
             interval.tick().await;
         }
-        loop {
+        let game_service = GameService::init().await;
+        let current = game_service.get_game_progress(id.clone()).await.expect("Failed to get game progress");
+        let mut round = 0;
+        let end = current.question_number as i64 * QUESTION_SECONDS as i64;
+        while round < end {
             let game_service = GameService::init().await;
             match game_service.get_game_progress(id.clone()).await {
                 Ok(result) => {
@@ -97,7 +103,9 @@ pub async fn game_progress(id: String) -> EventStream![] {
                 Err(_) => error!("Problem occurred when fetching game in sse game progress"),
             }
             interval.tick().await;
+            round += 1;
         }
+        yield Event::data("END");
     }
 }
 
@@ -157,7 +165,7 @@ async fn start_new_game(id: String) {
         };
         let game_progress_entity = progress_to_entity(game_proress_dto.clone());
         game_service.save_game_progress(&game_progress_entity).await;
-        let mut interval = time::interval(Duration::from_secs(20));
+        let mut interval = time::interval(Duration::from_secs(QUESTION_SECONDS));
         for _ in 0..game_proress_dto.question_number {
             interval.tick().await;
             info!("Next question");
