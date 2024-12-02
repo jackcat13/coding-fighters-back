@@ -1,11 +1,7 @@
 extern crate dotenv;
 use dotenv::dotenv;
 use log::debug;
-use mongodb::{
-    bson::{doc, oid::ObjectId},
-    options::ClientOptions,
-    Client, Collection, Cursor,
-};
+use mongodb::{bson::doc, options::ClientOptions, Client, Collection, Cursor};
 use std::env;
 
 use crate::model::game_answer::GameAnswer;
@@ -53,10 +49,7 @@ impl GameAnswerRepo {
 
     /// Gets all the [Answer]s of a game from the database.
     /// Returns an empty list if there are no answers.
-    pub async fn get_game_answers(
-        &self,
-        id: ObjectId,
-    ) -> mongodb::error::Result<Cursor<GameAnswer>> {
+    pub async fn get_game_answers(&self, id: String) -> mongodb::error::Result<Cursor<GameAnswer>> {
         debug!("Getting answers from DB");
         let games = self.col.find(doc!("game_id": id), None).await;
         debug!("Games retrieved from DB");

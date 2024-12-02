@@ -144,9 +144,7 @@ impl GameService {
     /// Gets a game result
     pub async fn get_game_result(&self, id: String) -> Result<Vec<GameAnswer>, GameServiceError> {
         debug!("get_game_result service started");
-        let object_id =
-            ObjectId::from_str(id.clone().as_str()).expect("Failed to create object id");
-        let result = match self.game_answer_repo.get_game_answers(object_id).await {
+        let result = match self.game_answer_repo.get_game_answers(id).await {
             Ok(mut answers) => {
                 let mut answers_output = vec![];
                 while let Some(answer) = answers.try_next().await.unwrap().or(None) {
