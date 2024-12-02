@@ -61,3 +61,12 @@ pub fn answer_to_entity(game_answer_dto: GameAnswerDto) -> GameAnswer {
         question_index: game_answer_dto.question_index,
     }
 }
+
+pub fn entity_to_answer(game_answer: GameAnswer) -> GameAnswerDto {
+    GameAnswerDto {
+        game_id: game_answer.game_id,
+        answer: game_answer.answer,
+        user: game_answer.user,
+        question_index: game_answer.question_index,
+    }
+}

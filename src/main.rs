@@ -11,7 +11,7 @@ use crate::fairing::cors::Cors;
 use crate::fairing::logging::{default_logging_layer, json_logging_layer, LogType};
 use crate::fairing::tracing::TracingFairing;
 use crate::resource::game_resource::{game_progress, get_game, get_games, patch_game};
-use resource::game_resource::{create_game, game_progress_answer};
+use resource::game_resource::{create_game, game_progress_answer, get_game_answers};
 use rocket::config::LogLevel;
 use rocket::{get, routes, Build, Rocket};
 use std::str::FromStr;
@@ -82,6 +82,7 @@ fn build_rocket() -> Rocket<Build> {
         .mount("/", routes![patch_game])
         .mount("/", routes![game_progress])
         .mount("/", routes![game_progress_answer])
+        .mount("/", routes![get_game_answers])
         .attach(Cors)
         .attach(TracingFairing)
 }

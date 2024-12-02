@@ -147,6 +147,29 @@ pub async fn patch_game(id: String) -> Result<Json<String>, Status> {
     result
 }
 
+/// GET request to get a game answers.
+/// Returns the game result.
+/// Returns an error if the game does not exist.
+/// Returns an error if the id is not a valid ObjectId.
+#[get("/game/<id>/result", format = "json")]
+pub async fn get_game_answers(id: String) -> Result<Json<Vec<GameAnswerDto>>, Status> {
+    debug!("get_game_result resource started");
+    let game_service = GameService::init().await;
+    let game_answers = game_service.get_game_result(id.clone()).await;
+    let result = match game_answers {
+        Ok(answers_fetched) => {
+            let game_output: Vec<GameAnswerDto> = answers_fetched
+                .iter()
+                .map(|answer| game_mapper::entity_to_answer(answer.clone()))
+                .collect();
+            Ok(Json(game_output))
+        }
+        Err(err) => Err(process_service_error(err)),
+    };
+    debug!("get_game_result resource ending");
+    result
+}
+
 async fn start_new_game(id: String) {
     info!("Starting the game");
     let questions = questions();
