@@ -59,6 +59,7 @@ pub fn answer_to_entity(game_answer_dto: GameAnswerDto) -> GameAnswer {
         answer: game_answer_dto.answer,
         user: game_answer_dto.user,
         question_index: game_answer_dto.question_index,
+        correct_answer: game_answer_dto.correct_answer,
     }
 }
 
@@ -68,5 +69,6 @@ pub fn entity_to_answer(game_answer: GameAnswer) -> GameAnswerDto {
         answer: game_answer.answer,
         user: game_answer.user,
         question_index: game_answer.question_index,
+        correct_answer: game_answer.correct_answer,
     }
 }

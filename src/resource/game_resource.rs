@@ -121,6 +121,7 @@ pub async fn game_progress_answer(id: String, answer: i8, user: String) {
         user,
         answer,
         question_index: game_progress.current_question,
+        correct_answer: game_progress.question_content.good_answer_number,
     };
     let answer = answer_to_entity(answer);
     game_service.save_game_answer(&answer).await;

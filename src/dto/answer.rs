@@ -7,4 +7,5 @@ pub struct GameAnswerDto {
     pub user: String,
     pub answer: i8,
     pub question_index: i8,
+    pub correct_answer: i8,
 }
