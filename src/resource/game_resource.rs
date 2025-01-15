@@ -221,13 +221,19 @@ fn process_service_error(error: GameServiceError) -> Status {
 #[cfg(test)]
 mod tests {
     use crate::dto::game_dto::GameDto;
-    use crate::resource::game_resource::{create_game, get_game, get_games, patch_game};
+    use crate::resource::game_resource::{
+        create_game, game_progress_answer, get_game, get_game_answers, get_games, patch_game,
+        start_new_game,
+    };
     use log::info;
     use rocket::async_test;
     use rocket::http::Status;
     use rocket::serde::json::Json;
+    use rocket::tokio::task;
     use serial_test::serial;
     use std::env;
+    use std::thread::sleep;
+    use std::time::Duration;
     use testcontainers::clients::Cli;
     use testcontainers::GenericImage;
 
@@ -439,5 +445,42 @@ mod tests {
         //Verify that the game was inserted in the DB
         let game_db = get_game(game_id).await.unwrap().into_inner();
         assert_eq!(game_db.is_started, true);
+    }
+
+    #[async_test]
+    #[serial]
+    async fn post_game_progress_answer_should_replace_existing_answer() {
+        init();
+        info!("Creating mongo container");
+        let docker = Cli::default();
+        let container = docker.run(GenericImage::new("mongo", "latest"));
+        let port = container.get_host_port_ipv4(27017);
+        let uri = format!("mongodb://localhost:{}", port);
+        env::set_var("MONGO_URI", uri.clone());
+        info!("Mongo container created");
+        let new_game = GameDto {
+            id: None,
+            topics: vec!["Java".to_string()],
+            question_number: 10,
+            is_private: false,
+            is_started: true,
+            creator: Some("bob".to_string()),
+        };
+        let game = create_game(Json(new_game)).await.unwrap().into_inner();
+        let id_clone = game.id.clone().unwrap();
+        task::spawn(async move { start_new_game(id_clone.clone()).await });
+        sleep(Duration::from_millis(100));
+        game_progress_answer(game.id.clone().unwrap(), 1, game.creator.clone().unwrap()).await;
+        let answers = get_game_answers(game.id.clone().unwrap())
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(answers.len(), 1);
+        game_progress_answer(game.id.clone().unwrap(), 1, game.creator.unwrap()).await;
+        let answers = get_game_answers(game.id.unwrap())
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(answers.len(), 1);
     }
 }
