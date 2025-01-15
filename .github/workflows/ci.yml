@@ -45,7 +45,7 @@ jobs:
         with:
           version: '0.15.0'
           args: '-- --test-threads 1'
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
