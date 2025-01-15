@@ -41,6 +41,10 @@ impl GameAnswerRepo {
         &self,
         new_game_answer: GameAnswer,
     ) -> mongodb::error::Result<mongodb::results::InsertOneResult> {
+        debug!("Deleting previous answers if any");
+        let game = new_game_answer.clone();
+        let _ = self.col.delete_many(doc!("game_id": game.game_id, "user": game.user, "question_index": game.question_index.to_string()), None).await;
+        debug!("Previous answers deleted");
         debug!("Saving game answer in DB");
         let game_answer_saved = self.col.insert_one(new_game_answer, None).await;
         debug!("Game answer saved in DB");
