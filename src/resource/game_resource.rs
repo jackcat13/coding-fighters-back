@@ -1,9 +1,12 @@
 use crate::dto::answer::GameAnswerDto;
 use crate::dto::game_dto::GameDto;
-use crate::dto::game_progress_dto::{questions, GameProgressDto};
+use crate::dto::game_progress_dto::{
+    questions_java, questions_kotlin, questions_rust, GameProgressDto, QuestionDto,
+};
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::mapper::game_mapper::progress_to_entity;
 use crate::mapper::game_mapper::{self, answer_to_entity};
+use crate::model::game::Game;
 use crate::service::game_service::GameService;
 use log::{debug, error, info};
 use rand::Rng;
@@ -13,6 +16,7 @@ use rocket::serde::json::Json;
 use rocket::tokio::{task, time};
 use rocket::{get, patch, post};
 use std::time::Duration;
+use std::vec;
 
 pub const QUESTION_SECONDS: u64 = 20;
 
@@ -170,12 +174,27 @@ pub async fn get_game_answers(id: String) -> Result<Json<Vec<GameAnswerDto>>, St
     result
 }
 
+fn resolve_question_pool(game: &Game) -> Vec<QuestionDto> {
+    let mut questions = vec![];
+    let topics = game.topics.clone();
+    if topics.contains(&"Java".to_string()) {
+        questions.append(&mut questions_java());
+    }
+    if topics.contains(&"Rust".to_string()) {
+        questions.append(&mut questions_rust());
+    }
+    if topics.contains(&"Kotlin".to_string()) {
+        questions.append(&mut questions_kotlin());
+    }
+    questions
+}
+
 async fn start_new_game(id: String) {
     info!("Starting the game");
-    let questions = questions();
     let game_service = GameService::init().await;
     let game = game_service.get_game(id.clone()).await;
     if let Ok(game) = game {
+        let questions = resolve_question_pool(&game);
         let random_index = rand::thread_rng().gen_range(0..questions.len());
         let question = questions.get(random_index).unwrap().clone();
         let mut game_proress_dto = GameProgressDto {
