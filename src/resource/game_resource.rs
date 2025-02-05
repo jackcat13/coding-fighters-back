@@ -108,6 +108,7 @@ pub async fn game_progress(id: String) -> EventStream![] {
             interval.tick().await;
         }
         yield Event::data("END");
+        return;
     }
 }
 
