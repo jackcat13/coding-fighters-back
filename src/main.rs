@@ -13,7 +13,7 @@ use crate::fairing::tracing::TracingFairing;
 use crate::resource::game_resource::{game_progress, get_game, get_games, patch_game};
 use resource::game_resource::{create_game, game_progress_answer, get_game_answers};
 use rocket::config::LogLevel;
-use rocket::{get, routes, Build, Rocket};
+use rocket::{get, options, routes, Build, Rocket};
 use std::str::FromStr;
 use tracing_log::LogTracer;
 use tracing_subscriber::prelude::*;
@@ -75,6 +75,7 @@ pub fn filter_layer(level: LogLevel) -> EnvFilter {
 
 fn build_rocket() -> Rocket<Build> {
     rocket::build()
+        .mount("/", routes![options_all])
         .mount("/", routes![index])
         .mount("/", routes![create_game])
         .mount("/", routes![get_games])
@@ -86,6 +87,9 @@ fn build_rocket() -> Rocket<Build> {
         .attach(Cors)
         .attach(TracingFairing)
 }
+
+#[options("/<_..>")]
+fn options_all() {}
 
 #[cfg(test)]
 mod tests {

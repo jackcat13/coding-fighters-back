@@ -20,9 +20,10 @@ pub struct QuestionDto {
     pub answer_2: String,
     pub answer_3: String,
     pub answer_4: String,
+    #[serde(skip_serializing)]
     pub good_answer_number: i8,
     pub topic: String,
-    pub remaing_time: u64,
+    pub remaining_time: u64,
 }
 
 pub fn questions_java() -> Vec<QuestionDto> {
@@ -35,7 +36,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "char".to_string(),
             good_answer_number: 3,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, what statement is true ?".to_string(),
@@ -50,7 +51,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "A class must implement one interface and must extend one class".to_string(),
             good_answer_number: 1,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which of the below is valid way to instantiate an array in Java ?".to_string(),
@@ -60,7 +61,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "int [] myArray = {“1”, “2”, “3”};".to_string(),
             good_answer_number: 1,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, what is the return type of the hashCode() method in the Object class ?".to_string(),
@@ -70,7 +71,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "void".to_string(),
             good_answer_number: 2,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, what does the expression float a = 35 / 0 return ?".to_string(),
@@ -80,7 +81,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "RuntimeException".to_string(),
             good_answer_number: 3,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Evaluate the following Java expression, if x=3, y=5, and z=10 : ++z + y - y + z + x++".to_string(),
@@ -90,7 +91,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "25".to_string(),
             good_answer_number: 4,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of the following tool is used to generate API documentation in HTML format from doc comments in source code ?".to_string(),
@@ -100,7 +101,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "javah command".to_string(),
             good_answer_number: 3,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of the following creates a List of 3 visible items and multiple selections abled ?".to_string(),
@@ -110,7 +111,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "new List(3, false)".to_string(),
             good_answer_number: 2,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of the following for loop declaration is NOT valid ?".to_string(),
@@ -120,7 +121,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "for ( int i = 2; i <= 20; i = 2* i )".to_string(),
             good_answer_number: 1,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which method of the Class.class is used to determine the name of a class represented by the class object as a String ?".to_string(),
@@ -130,7 +131,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "toString()".to_string(),
             good_answer_number: 3,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, in which process, a local variable has the same name as one of the instance variables ?".to_string(),
@@ -140,7 +141,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "It has no class name".to_string(),
             good_answer_number: 4,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which package contains the Random class ?".to_string(),
@@ -150,7 +151,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "java.io package".to_string(),
             good_answer_number: 1,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, what do you mean by nameless objects ?".to_string(),
@@ -160,7 +161,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "An object that has no reference".to_string(),
             good_answer_number: 4,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, an interface with no fields or methods is known as a ______".to_string(),
@@ -170,7 +171,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "CharSequence interface".to_string(),
             good_answer_number: 2,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of the following is an immediate subclass of the Panel class?".to_string(),
@@ -180,7 +181,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "Dialog class".to_string(),
             good_answer_number: 1,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which option is false about the final keyword ?".to_string(),
@@ -190,7 +191,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "A final method can be inherited.".to_string(),
             good_answer_number: 3,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of these classes are the direct subclasses of the Throwable class ?".to_string(),
@@ -200,7 +201,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "IOException and VirtualMachineError class".to_string(),
             good_answer_number: 3,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What do you mean by chained exceptions in Java ?".to_string(),
@@ -210,7 +211,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 2,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, in which memory a String is stored, when we create a string using new operator ?".to_string(),
@@ -220,7 +221,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "Random storage space".to_string(),
             good_answer_number: 3,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, what is the use of the intern() method ?".to_string(),
@@ -230,7 +231,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 1,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of the following is a marker interface ?".to_string(),
@@ -240,7 +241,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "Result interface".to_string(),
             good_answer_number: 2,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which of the following is a reserved keyword in Java ?".to_string(),
@@ -250,7 +251,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "system".to_string(),
             good_answer_number: 2,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which keyword is used for accessing the features of a package ?".to_string(),
@@ -260,7 +261,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "export".to_string(),
             good_answer_number: 2,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In java, jar stands for_____".to_string(),
@@ -270,7 +271,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 4,
             topic: "Java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "in java, which of the following is false ?".to_string(),
@@ -280,7 +281,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "all the classes available in rt.jar is known to the jvm".to_string(),
             good_answer_number: 2,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, what is the use of \\w in regex ?".to_string(),
@@ -290,7 +291,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "Used for a non-word character".to_string(),
             good_answer_number: 3,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of the given methods are of Object class ?".to_string(),
@@ -300,7 +301,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "sleep( long msecs ), wait(), and notify()".to_string(),
             good_answer_number: 3,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of the following is a valid syntax to synchronize the HashMap ?".to_string(),
@@ -310,7 +311,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "Map m2 = Collection.synchronizeMap(hashMap);".to_string(),
             good_answer_number: 3,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, what is meant by the classes and objects that dependents on each other ?".to_string(),
@@ -320,7 +321,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 1,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Javan how many threads can be executed at a time ?".to_string(),
@@ -330,7 +331,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "Two threads".to_string(),
             good_answer_number: 2,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, if three threads trying to share a single object at the same time, which condition will arise in this scenario ?".to_string(),
@@ -340,7 +341,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "Recursion".to_string(),
             good_answer_number: 3,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, if a thread goes to sleep".to_string(),
@@ -350,7 +351,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "It releases all of its lock except one.".to_string(),
             good_answer_number: 2,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, which of the following modifiers can be used for a variable so that it can be accessed by any thread or a part of a program ?".to_string(),
@@ -360,7 +361,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "default".to_string(),
             good_answer_number: 3,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, in character stream I/O, a single read/write operation performs _____".to_string(),
@@ -370,7 +371,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "Five bytes read/ write at a time.".to_string(),
             good_answer_number: 1,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Java, what is the default encoding for an OutputStreamWriter ?".to_string(),
@@ -380,7 +381,7 @@ pub fn questions_java() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 2,
             topic: "java".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
     ]
 }
@@ -394,7 +395,7 @@ pub fn questions_rust() -> Vec<QuestionDto> {
         answer_4: "An anonymous function that captures its environment".to_string(),
         good_answer_number: 4,
         topic: "Rust".to_string(),
-        remaing_time: QUESTION_SECONDS,
+        remaining_time: QUESTION_SECONDS,
     }]
 }
 
@@ -408,7 +409,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "A database management system".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which platform does Kotlin primarily target ?".to_string(),
@@ -418,7 +419,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "PHP".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Are semicolons (;) mandatory at the end of code statements in Kotlin ?".to_string(),
@@ -428,7 +429,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What paradigm(s) does the Kotlin programming language follow ?".to_string(),
@@ -438,7 +439,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "Both Object-Oriented and Functional".to_string(),
             good_answer_number: 4,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you declare a variable in Kotlin?".to_string(),
@@ -448,7 +449,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "var myVariable: Int = 10".to_string(),
             good_answer_number: 4,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you define a variable in Kotlin that cannot be reassigned ?".to_string(),
@@ -458,7 +459,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "final".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you declare a nullable variable in Kotlin ?".to_string(),
@@ -468,7 +469,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "String name = null".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What is the difference between val and var in Kotlin ?".to_string(),
@@ -478,7 +479,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "'val' is used for local variables, and 'var' is used for globak variables".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you define a function in Kotlin ?".to_string(),
@@ -488,7 +489,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "fun = myFunction() {}".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Why is the when expression used in Kotlin ?".to_string(),
@@ -498,7 +499,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "To create a lambda function".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What does ?. operator do in Kotlin ?".to_string(),
@@ -508,7 +509,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What is the default visibility modifiers in Kotlin if no modifier is specified ?".to_string(),
@@ -518,7 +519,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "protected".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which keyword is used to create a singleton in Kotlin ?".to_string(),
@@ -528,7 +529,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "object".to_string(),
             good_answer_number: 4,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What is the main purpose of the let function in Kotlin ?".to_string(),
@@ -538,7 +539,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which feature in Kotlin helps to prevent NullPointerExceptions ?".to_string(),
@@ -548,7 +549,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "Safe cast operator (as?)".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What is the purpose of the open modifier in Kotlin ?".to_string(),
@@ -558,7 +559,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "It allows a function to be called only from within its own class".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you create a single-line comment in Kotlin ?".to_string(),
@@ -568,7 +569,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "# This is a comment".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How can we write a multi-line comment in Kotlin ?".to_string(),
@@ -578,7 +579,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "# This is a comment".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What is the role of the init block in Kotlin ?".to_string(),
@@ -588,7 +589,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you call a function in Kotlin ?".to_string(),
@@ -598,7 +599,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "functionName:call".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which Kotlin construct allows a block of code to be executed a specific number of times ?".to_string(),
@@ -608,7 +609,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "loop".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which keyword are used to handle conditional statements in Kotlin ?".to_string(),
@@ -618,7 +619,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What is the correct way to define a primary constructor in Kotlin ?".to_string(),
@@ -628,7 +629,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "class Person()".to_string(),
             good_answer_number: 4,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Kotlin, what is the main purpose of the return keyword ?".to_string(),
@@ -638,7 +639,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "To define a class".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What is the primary use of the 'with' function in Kotlin ?".to_string(),
@@ -648,7 +649,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "To create an anonymous function".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What does the 'also' function do in Kotlin ?".to_string(),
@@ -658,7 +659,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which of these is not a loop structure in Kotlin ?".to_string(),
@@ -668,7 +669,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "do-while loop".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do we throw an exception in Kotlin ?".to_string(),
@@ -678,7 +679,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What methods can be used to achieve abstraction in Kotlin ?".to_string(),
@@ -688,7 +689,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you declare an array of integers in Kotlin ?".to_string(),
@@ -698,7 +699,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "val numbers = Array(3) {0, 1, 2}".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which of the following is not a basic type in Kotlin ?".to_string(),
@@ -708,7 +709,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "Char".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you declare a String in Kotlin ?".to_string(),
@@ -718,7 +719,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "String str = new String(\"Hello World\")".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Kotlin, how do you compare two Strings for equality ?".to_string(),
@@ -728,7 +729,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "str1.sameAs(str2)".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which property can be used to find the length of a string ?".to_string(),
@@ -738,7 +739,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "charCount".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "In Kotlin, which collection type has an order and can contain duplicate elements ?".to_string(),
@@ -748,7 +749,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "All of the above".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which function is used to iterate over a collection in Kotlin ?".to_string(),
@@ -758,7 +759,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "filter()".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which of these functions can transform a list in Kotlin ?".to_string(),
@@ -768,7 +769,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "None of the above".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "Which collection type ensures element uniqueness in Kotlin ?".to_string(),
@@ -778,7 +779,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "MutableList".to_string(),
             good_answer_number: 2,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "How do you create an empty list in Kotlin ?".to_string(),
@@ -788,7 +789,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "mutableListOf()".to_string(),
             good_answer_number: 1,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
         QuestionDto {
             question_text: "What does the mapOf() function do in Kotlin ?".to_string(),
@@ -798,7 +799,7 @@ pub fn questions_kotlin() -> Vec<QuestionDto> {
             answer_4: "It creates a new Queue".to_string(),
             good_answer_number: 3,
             topic: "Kotlin".to_string(),
-            remaing_time: QUESTION_SECONDS,
+            remaining_time: QUESTION_SECONDS,
         },
 
     ]

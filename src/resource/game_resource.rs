@@ -4,8 +4,8 @@ use crate::dto::game_progress_dto::{
     questions_java, questions_kotlin, questions_rust, GameProgressDto, QuestionDto,
 };
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
-use crate::mapper::game_mapper::progress_to_entity;
 use crate::mapper::game_mapper::{self, answer_to_entity};
+use crate::mapper::game_mapper::{entity_to_progress, progress_to_entity};
 use crate::model::game::Game;
 use crate::service::game_service::GameService;
 use log::{debug, error, info};
@@ -101,7 +101,8 @@ pub async fn game_progress(id: String) -> EventStream![] {
             match game_service.get_game_progress(id.clone()).await {
                 Ok(result) => {
                     current = result.clone();
-                    yield Event::json(&result);
+                    let game_progress_dto = entity_to_progress(result);
+                    yield Event::json(&game_progress_dto);
                 },
                 Err(_) => error!("Problem occurred when fetching game in sse game progress"),
             }
@@ -210,7 +211,7 @@ async fn start_new_game(id: String) {
         for _ in 0..game_proress_dto.question_number {
             for _ in 0..QUESTION_SECONDS {
                 interval.tick().await;
-                game_proress_dto.question_content.remaing_time -= 1;
+                game_proress_dto.question_content.remaining_time -= 1;
                 let game_progress_entity = progress_to_entity(game_proress_dto.clone());
                 game_service
                     .replace_game_progress(&game_progress_entity)
