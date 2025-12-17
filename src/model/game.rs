@@ -11,4 +11,5 @@ pub struct Game {
     pub is_private: bool,
     pub is_started: bool,
     pub creator: Option<String>,
+    pub users: Vec<String>,
 }

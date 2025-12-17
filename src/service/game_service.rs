@@ -97,6 +97,13 @@ impl GameService {
         result
     }
 
+    /// Saves the game
+    pub async fn save_users_in_game(&self, game: &Game) {
+        debug!("save_game service started");
+        let _ = self.game_repo.save_users_in_game(game.clone()).await;
+        debug!("save_game service ending");
+    }
+
     /// Saves the game_progress of a particular game
     pub async fn save_game_progress(&self, game_progress: &GameProgress) {
         debug!("save_game_progress service started");

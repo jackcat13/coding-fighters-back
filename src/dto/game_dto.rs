@@ -10,4 +10,6 @@ pub struct GameDto {
     pub is_private: bool,
     pub is_started: bool,
     pub creator: Option<String>,
+    #[serde(skip)]
+    pub users: Vec<String>,
 }

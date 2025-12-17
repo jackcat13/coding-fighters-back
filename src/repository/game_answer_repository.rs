@@ -58,8 +58,8 @@ impl GameAnswerRepo {
     /// Returns an empty list if there are no answers.
     pub async fn get_game_answers(&self, id: String) -> mongodb::error::Result<Cursor<GameAnswer>> {
         debug!("Getting answers from DB");
-        let games = self.col.find(doc!("game_id": id), None).await;
+        let game = self.col.find(doc!("game_id": id), None).await;
         debug!("Games retrieved from DB");
-        games
+        game
     }
 }

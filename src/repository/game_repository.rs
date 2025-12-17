@@ -81,4 +81,16 @@ impl GameRepo {
         info!("Game patched from DB");
         game
     }
+
+    /// Saves a [Game] in the database.
+    pub async fn save_users_in_game(&self, new_game: Game) -> mongodb::error::Result<UpdateResult> {
+        debug!("Saving game in DB");
+        let update = doc! { "$set": doc! {"users": new_game.users} };
+        let game = self
+            .col
+            .update_one(doc! {"_id": new_game.id}, update, None)
+            .await;
+        info!("Game saved in DB");
+        game
+    }
 }

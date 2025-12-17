@@ -88,11 +88,16 @@ pub async fn game_progress(id: String) -> EventStream![] {
         debug!("game_progress events started");
         let mut interval = time::interval(Duration::from_secs(1));
         loop {
+            let mut users: Vec<String> = vec![];
             match get_game(id.clone()).await {
-                Ok(result) => if result.is_started {break},
+                Ok(result) => {
+                    users = result.users.clone();
+                    if result.is_started {break}
+                },
                 Err(_) => error!("Problem occurred when fetching game in sse game progress"),
             }
-            yield Event::data("NOT STARTED");
+            let users_string = users.iter().map(|u| u.to_owned() + "\n").collect::<String>();
+            yield Event::data("NOT STARTED".to_owned() + users_string.as_str());
             interval.tick().await;
         }
         let game_service = GameService::init().await;
@@ -134,6 +139,22 @@ pub async fn game_progress_answer(id: String, answer: i8, user: String) {
     let answer = answer_to_entity(answer);
     game_service.save_game_answer(&answer).await;
     debug!("game_progress_answer ending");
+}
+
+/// POST request to register new player
+#[post("/game/<id>/users/<user>", format = "json")]
+pub async fn game_register_user(id: String, user: String) {
+    debug!("game_register_user started");
+    let game_service = GameService::init().await;
+    let mut game = game_service
+        .get_game(id)
+        .await
+        .expect("Failed to get game progress");
+    if game.users.contains(&user) == false {
+        game.users.push(user);
+        game_service.save_users_in_game(&game).await;
+    }
+    debug!("game_register_user ending");
 }
 
 /// PATCH request to update a game content.
@@ -291,6 +312,7 @@ mod tests {
             is_private: false,
             is_started: false,
             creator: Some("bob".to_string()),
+            users: vec![],
         };
         let game_created = create_game(Json(new_game)).await.unwrap().into_inner();
         assert_eq!(game_created.id.is_some(), true);
@@ -378,6 +400,7 @@ mod tests {
             is_private: false,
             is_started: false,
             creator: Some("bob".to_string()),
+            users: vec![],
         };
         info!("Creating game 1");
         let _ = create_game(Json(new_game.clone())).await;
@@ -406,6 +429,7 @@ mod tests {
             is_private: false,
             is_started: false,
             creator: Some("bob".to_string()),
+            users: vec![],
         };
         let new_game_private = GameDto {
             id: None,
@@ -414,6 +438,7 @@ mod tests {
             is_private: true,
             is_started: false,
             creator: Some("bob".to_string()),
+            users: vec![],
         };
         let new_game_started = GameDto {
             id: None,
@@ -422,6 +447,7 @@ mod tests {
             is_private: false,
             is_started: true,
             creator: Some("bob".to_string()),
+            users: vec![],
         };
         info!("Creating game 1");
         let _ = create_game(Json(new_game.clone())).await;
@@ -458,6 +484,7 @@ mod tests {
             is_private: false,
             is_started: false,
             creator: Some("bob".to_string()),
+            users: vec![],
         };
         let game_created = create_game(Json(new_game)).await.unwrap().into_inner();
         assert_eq!(game_created.is_started, false);
@@ -471,6 +498,7 @@ mod tests {
             is_private: false,
             is_started: true,
             creator: Some("bob".to_string()),
+            users: vec![],
         };
         let _ = patch_game(game_id.clone()).await;
 
@@ -497,6 +525,7 @@ mod tests {
             is_private: false,
             is_started: true,
             creator: Some("bob".to_string()),
+            users: vec![],
         };
         let game = create_game(Json(new_game)).await.unwrap().into_inner();
         let id_clone = game.id.clone().unwrap();
