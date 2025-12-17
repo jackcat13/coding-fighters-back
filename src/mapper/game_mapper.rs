@@ -1,9 +1,10 @@
 use crate::dto::answer::GameAnswerDto;
 use crate::dto::game_dto::GameDto;
-use crate::dto::game_progress_dto::{GameProgressDto, QuestionDto};
+use crate::dto::game_progress_dto::GameProgressDto;
+use crate::mapper::question_mapper;
 use crate::model::game::Game;
 use crate::model::game_answer::GameAnswer;
-use crate::model::game_progress::{GameProgress, Question};
+use crate::model::game_progress::GameProgress;
 use mongodb::bson::oid::ObjectId;
 use std::str::FromStr;
 
@@ -40,16 +41,7 @@ pub fn progress_to_entity(game_progress_dto: GameProgressDto) -> GameProgress {
         id: game_progress_dto.game_id,
         current_question: game_progress_dto.current_question,
         question_number: game_progress_dto.question_number,
-        question_content: Question {
-            question_text: question.question_text,
-            answer_1: question.answer_1,
-            answer_2: question.answer_2,
-            answer_3: question.answer_3,
-            answer_4: question.answer_4,
-            good_answer_number: question.good_answer_number,
-            topic: question.topic,
-            remaining_time: question.remaining_time,
-        },
+        question_content: question_mapper::to_entity(question),
     }
 }
 
@@ -59,16 +51,7 @@ pub fn entity_to_progress(game_progress: GameProgress) -> GameProgressDto {
         game_id: game_progress.id,
         current_question: game_progress.current_question,
         question_number: game_progress.question_number,
-        question_content: QuestionDto {
-            question_text: question.question_text,
-            answer_1: question.answer_1,
-            answer_2: question.answer_2,
-            answer_3: question.answer_3,
-            answer_4: question.answer_4,
-            good_answer_number: question.good_answer_number,
-            topic: question.topic,
-            remaining_time: question.remaining_time,
-        },
+        question_content: question_mapper::to_dto(question),
     }
 }
 
@@ -79,6 +62,7 @@ pub fn answer_to_entity(game_answer_dto: GameAnswerDto) -> GameAnswer {
         user: game_answer_dto.user,
         question_index: game_answer_dto.question_index,
         correct_answer: game_answer_dto.correct_answer,
+        question: question_mapper::to_entity(game_answer_dto.question),
     }
 }
 
@@ -89,5 +73,6 @@ pub fn entity_to_answer(game_answer: GameAnswer) -> GameAnswerDto {
         user: game_answer.user,
         question_index: game_answer.question_index,
         correct_answer: game_answer.correct_answer,
+        question: question_mapper::to_dto(game_answer.question),
     }
 }

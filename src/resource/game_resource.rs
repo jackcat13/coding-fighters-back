@@ -6,6 +6,7 @@ use crate::dto::game_progress_dto::{
 use crate::errors::game_service_error::{GameServiceError, GameServiceErrorKind};
 use crate::mapper::game_mapper::{self, answer_to_entity};
 use crate::mapper::game_mapper::{entity_to_progress, progress_to_entity};
+use crate::mapper::question_mapper;
 use crate::model::game::Game;
 use crate::service::game_service::GameService;
 use log::{debug, error, info};
@@ -128,6 +129,7 @@ pub async fn game_progress_answer(id: String, answer: i8, user: String) {
         answer,
         question_index: game_progress.current_question,
         correct_answer: game_progress.question_content.good_answer_number,
+        question: question_mapper::to_dto(game_progress.question_content),
     };
     let answer = answer_to_entity(answer);
     game_service.save_game_answer(&answer).await;
@@ -161,6 +163,15 @@ pub async fn patch_game(id: String) -> Result<Json<String>, Status> {
 pub async fn get_game_answers(id: String) -> Result<Json<Vec<GameAnswerDto>>, Status> {
     debug!("get_game_result resource started");
     let game_service = GameService::init().await;
+    let game_progress = game_service.get_game_progress(id.clone()).await;
+    match game_progress {
+        Ok(game_progress) => {
+            if game_progress.current_question < game_progress.question_number {
+                return Err(Status::Locked);
+            }
+        }
+        Err(error) => return Err(process_service_error(error)),
+    }
     let game_answers = game_service.get_game_result(id.clone()).await;
     let result = match game_answers {
         Ok(answers_fetched) => {
