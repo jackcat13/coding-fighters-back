@@ -240,7 +240,7 @@ async fn start_new_game(id: String) {
         let game_progress_entity = progress_to_entity(game_proress_dto.clone());
         game_service.save_game_progress(&game_progress_entity).await;
         let mut interval = time::interval(Duration::from_secs(1));
-        for _ in 0..game_proress_dto.question_number {
+        for question_index in 0..game_proress_dto.question_number {
             for _ in 0..QUESTION_SECONDS {
                 interval.tick().await;
                 game_proress_dto.question_content.remaining_time -= 1;
@@ -248,6 +248,9 @@ async fn start_new_game(id: String) {
                 game_service
                     .replace_game_progress(&game_progress_entity)
                     .await;
+            }
+            if question_index == game_proress_dto.question_number - 1 {
+                break;
             }
             info!("Next question");
             game_proress_dto.current_question += 1;
