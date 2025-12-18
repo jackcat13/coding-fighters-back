@@ -150,7 +150,7 @@ pub async fn game_register_user(id: String, user: String) {
         .get_game(id)
         .await
         .expect("Failed to get game progress");
-    if game.users.contains(&user) == false {
+    if !game.users.contains(&user) {
         game.users.push(user);
         game_service.save_users_in_game(&game).await;
     }
@@ -187,7 +187,7 @@ pub async fn get_game_answers(id: String) -> Result<Json<Vec<GameAnswerDto>>, St
     let game_progress = game_service.get_game_progress(id.clone()).await;
     match game_progress {
         Ok(game_progress) => {
-            if game_progress.current_question < game_progress.question_number {
+            if game_progress.current_question < game_progress.question_number - 1 {
                 return Err(Status::Locked);
             }
         }
@@ -524,7 +524,7 @@ mod tests {
         let new_game = GameDto {
             id: None,
             topics: vec!["Java".to_string()],
-            question_number: 10,
+            question_number: 1,
             is_private: false,
             is_started: true,
             creator: Some("bob".to_string()),
@@ -534,13 +534,9 @@ mod tests {
         let id_clone = game.id.clone().unwrap();
         task::spawn(async move { start_new_game(id_clone.clone()).await });
         sleep(Duration::from_millis(100));
-        game_progress_answer(game.id.clone().unwrap(), 1, game.creator.clone().unwrap()).await;
-        let answers = get_game_answers(game.id.clone().unwrap())
-            .await
-            .unwrap()
-            .into_inner();
-        assert_eq!(answers.len(), 1);
+        game_progress_answer(game.id.clone().unwrap(), 2, game.creator.clone().unwrap()).await;
         game_progress_answer(game.id.clone().unwrap(), 1, game.creator.unwrap()).await;
+        sleep(Duration::from_secs(21));
         let answers = get_game_answers(game.id.unwrap())
             .await
             .unwrap()

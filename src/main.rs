@@ -27,7 +27,7 @@ async fn index() -> &'static str {
 }
 
 #[rocket::main]
-async fn main() -> Result<(), rocket::Error> {
+async fn main() -> Result<(), Box<rocket::Error>> {
     init_log_tracer();
     let _rocket = build_rocket().launch().await?;
     Ok(())
